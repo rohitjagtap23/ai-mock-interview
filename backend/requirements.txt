@@ -4,3 +4,4 @@ python-dotenv
 supabase
 serpapi
 google-genai
+gunicorn
