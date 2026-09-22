@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   AI Interview | AI Career Interviewer
+  </title>
+  <link href="style.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+  </script>
+  <script src="auth.js">
+  </script>
+  <script defer="" src="script.js">
+  </script>
+ </head>
+ <body>
+  <aside class="sidebar">
+   <div class="sidebar-title">
+    AI Career
+    <br/>
+    Interviewer
+   </div>
+   <nav class="sidebar-nav">
+    <a class="active" href="index.html">
+     AI Interview
+    </a>
+    <a href="dashboard.html">
+     Dashboard
+    </a>
+    <a href="career-intelligence.html">
+     Market Intelligence
+    </a>
+    <a href="resume.html">
+     Resume Analyzer
+    </a>
+    <a href="job-matching.html">
+     Job Matching
+    </a>
+    <a href="skill-gap.html">
+     Skill Gap
+    </a>
+    <a href="roadmap.html">
+     Learning Roadmap
+    </a>
+    <a href="progress.html">
+     My Progress
+    </a>
+    <a href="interview-history.html">
+     Interview History
+    </a>
+    <a href="profile.html">
+     My Profile
+    </a>
+    <button class="logout-button" id="logoutButton" type="button">
+     Logout
+    </button>
+   </nav>
+  </aside>
+  <main class="main">
+   <h1>
+    AI Interview
+   </h1>
+   <p class="muted">
+    Prepare for jobs that are actually available right now.
+   </p>
+   <section class="card">
+    <h2>
+     Live Job Market
+    </h2>
+    <div class="grid">
+     <div>
+      <label>
+       Target role
+      </label>
+      <input class="input" id="role" placeholder="Java Developer"/>
+     </div>
+     <div>
+      <label>
+       Location
+      </label>
+      <input class="input" id="location" placeholder="Pune"/>
+     </div>
+    </div>
+    <button id="analyzeButton" type="button">
+     Analyze Live Job Market
+    </button>
+    <p class="muted" id="marketMessage">
+    </p>
+    <p id="jobsFound">
+    </p>
+    <div id="skillsContainer">
+    </div>
+   </section>
+   <section class="card" id="interviewModeSection">
+    <h2>
+     Choose Interview Mode
+    </h2>
+    <div class="grid">
+     <div>
+      <h3>
+       ⌨️ Text Interview
+      </h3>
+      <p class="muted">
+       Type answers and receive AI evaluation.
+      </p>
+      <button id="startInterviewButton" type="button">
+       Start Text Interview
+      </button>
+     </div>
+     <div>
+      <h3>
+       🎤 Voice Interview
+      </h3>
+      <p class="muted">
+       Speak your answers using Chrome speech recognition.
+      </p>
+      <button id="voiceInterviewButton" type="button">
+       Start Voice Interview
+      </button>
+     </div>
+    </div>
+    <p id="startStatus">
+    </p>
+   </section>
+   <section class="card hidden" id="interviewSection">
+    <p class="muted" id="questionNumber">
+    </p>
+    <p class="pill" id="questionSkill">
+    </p>
+    <h2 id="question">
+    </h2>
+    <div id="textAnswerSection">
+     <textarea id="answer" placeholder="Type your answer..."></textarea>
+     <button id="submitAnswer" type="button">
+      Submit Answer
+     </button>
+    </div>
+    <div class="hidden" id="voiceAnswerSection">
+     <p id="voiceStatus">
+      Ready
+     </p>
+     <div class="transcript" id="transcript">
+     </div>
+     <button id="startVoiceButton" type="button">
+      🎤 Start Speaking
+     </button>
+     <button disabled="" id="stopVoiceButton" type="button">
+      ⏹ Stop
+     </button>
+     <button disabled="" id="submitVoiceButton" type="button">
+      Submit Voice Answer
+     </button>
+    </div>
+    <div class="evaluation hidden" id="evaluationBox">
+     <h3>
+      🤖 AI Evaluation
+     </h3>
+     <div class="score" id="score">
+      0/10
+     </div>
+     <p>
+      <b>
+       Technical Correctness
+      </b>
+     </p>
+     <p id="technicalCorrectness">
+     </p>
+     <p>
+      <b>
+       Communication
+      </b>
+     </p>
+     <p id="communication">
+     </p>
+     <p>
+      <b>
+       Practical Knowledge
+      </b>
+     </p>
+     <p id="practicalKnowledge">
+     </p>
+     <p>
+      <b>
+       Strengths
+      </b>
+     </p>
+     <ul id="strengths">
+     </ul>
+     <p>
+      <b>
+       Missing Concepts
+      </b>
+     </p>
+     <ul id="missingConcepts">
+     </ul>
+     <p>
+      <b>
+       Feedback
+      </b>
+     </p>
+     <p id="feedback">
+     </p>
+    </div>
+    <button class="hidden" id="nextButton" type="button">
+     Next Question →
+    </button>
+   </section>
+   <section class="card hidden" id="skillGapSection">
+    <h2>
+     📊 Skill Gap
+    </h2>
+    <div id="skillGapContainer">
+    </div>
+    <a class="btn" href="skill-gap.html">
+     Detailed Skill Gap
+    </a>
+    <a class="btn" href="roadmap.html">
+     Learning Roadmap →
+    </a>
+   </section>
+  </main>
+ </body>
+</html>

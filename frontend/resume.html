@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <title>
+   Resume Analyzer | AI Career Interviewer
+  </title>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <link href="style.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+  </script>
+  <script src="auth.js">
+  </script>
+  <script defer="" src="page.js">
+  </script>
+ </head>
+ <body data-page="resume">
+  <aside class="sidebar">
+   <div class="sidebar-title">
+    AI Career
+    <br/>
+    Interviewer
+   </div>
+   <nav class="sidebar-nav">
+    <a data-page="index.html" href="index.html">
+     AI Interview
+    </a>
+    <a data-page="dashboard.html" href="dashboard.html">
+     Dashboard
+    </a>
+    <a data-page="career-intelligence.html" href="career-intelligence.html">
+     Market Intelligence
+    </a>
+    <a data-page="resume.html" href="resume.html">
+     Resume Analyzer
+    </a>
+    <a data-page="job-matching.html" href="job-matching.html">
+     Job Matching
+    </a>
+    <a data-page="skill-gap.html" href="skill-gap.html">
+     Skill Gap
+    </a>
+    <a data-page="roadmap.html" href="roadmap.html">
+     Learning Roadmap
+    </a>
+    <a data-page="progress.html" href="progress.html">
+     My Progress
+    </a>
+    <a data-page="interview-history.html" href="interview-history.html">
+     Interview History
+    </a>
+    <a data-page="profile.html" href="profile.html">
+     My Profile
+    </a>
+    <button class="logout-button" id="logoutButton" type="button">
+     Logout
+    </button>
+   </nav>
+  </aside>
+  <main class="main">
+   <h1>
+    Resume Analyzer
+   </h1>
+   <p class="muted">
+    Upload a text-based PDF resume for analysis.
+   </p>
+   <section class="card">
+    <input accept="application/pdf" id="resumeFile" type="file"/>
+    <br/>
+    <button id="resumeButton" type="button">
+     Analyze Resume
+    </button>
+   </section>
+   <section class="card" id="resumeOut">
+    Choose a PDF and click Analyze Resume.
+   </section>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js">
+   </script>
+  </main>
+ </body>
+</html>

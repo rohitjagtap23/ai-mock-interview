@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+  <title>
+   Sign Up | AI Career Interviewer
+  </title>
+  <link href="style.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+  </script>
+  <script src="auth.js">
+  </script>
+ </head>
+ <body class="auth-page">
+  <main class="auth-box">
+   <h1>
+    Create Account
+   </h1>
+   <p class="muted">
+    Start your AI career preparation.
+   </p>
+   <form id="signupForm">
+    <label>
+     Email
+    </label>
+    <input class="input" id="email" required="" type="email"/>
+    <label>
+     Password
+    </label>
+    <input class="input" id="password" minlength="6" required="" type="password"/>
+    <button type="submit">
+     Sign Up
+    </button>
+   </form>
+   <p id="signupMessage">
+   </p>
+   <p class="muted">
+    Already registered?
+    <a href="login.html">
+     Login
+    </a>
+   </p>
+  </main>
+  <script>
+   document.getElementById('signupForm').addEventListener('submit',async(event)=>{event.preventDefault();const message=document.getElementById('signupMessage');message.textContent='Creating account...';const result=await signUp(document.getElementById('email').value.trim(),document.getElementById('password').value);if(result.error){message.textContent=result.error.message;message.className='error';return;}message.textContent=result.data.session?'Account created.':'Account created. Check your email if confirmation is enabled.';message.className='success';});
+  </script>
+ </body>
+</html>

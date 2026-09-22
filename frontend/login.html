@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+  <title>
+   Login | AI Career Interviewer
+  </title>
+  <link href="style.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+  </script>
+  <script src="auth.js">
+  </script>
+ </head>
+ <body class="auth-page">
+  <main class="auth-box">
+   <h1>
+    AI Career Interviewer
+   </h1>
+   <p class="muted">
+    Login to continue.
+   </p>
+   <form id="loginForm">
+    <label>
+     Email
+    </label>
+    <input class="input" id="email" required="" type="email"/>
+    <label>
+     Password
+    </label>
+    <input class="input" id="password" required="" type="password"/>
+    <button type="submit">
+     Login
+    </button>
+   </form>
+   <p id="loginMessage">
+   </p>
+   <p class="muted">
+    New here?
+    <a href="signup.html">
+     Create an account
+    </a>
+   </p>
+  </main>
+  <script>
+   document.getElementById('loginForm').addEventListener('submit',async(event)=>{event.preventDefault();const message=document.getElementById('loginMessage');message.textContent='Logging in...';const result=await loginUser(document.getElementById('email').value.trim(),document.getElementById('password').value);if(result.error){message.textContent=result.error.message;message.className='error';return;}message.textContent='Login successful.';message.className='success';setTimeout(()=>window.location.href='index.html',400);});
+  </script>
+ </body>
+</html>
