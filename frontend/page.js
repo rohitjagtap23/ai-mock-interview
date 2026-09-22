@@ -1,4 +1,4 @@
-const API_URL = 'http://127.0.0.1:5000';
+const API_URL = 'https://ai-career-interviewer-backend.onrender.com';
 const byId = (id) => document.getElementById(id);
 const escHtml = (value) => { const d=document.createElement('div'); d.textContent=value??''; return d.innerHTML; };
 
@@ -109,3 +109,4 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(byId('resourceButton'))byId('resourceButton').addEventListener('click',runResources);
     if(byId('resumeButton'))byId('resumeButton').addEventListener('click',analyzeResume);
 });
+
