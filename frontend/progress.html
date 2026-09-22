@@ -1,90 +1,1541 @@
 <!DOCTYPE html>
 <html lang="en">
- <head>
-  <title>
-   My Progress | AI Career Interviewer
-  </title>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <link href="style.css" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-  </script>
-  <script src="auth.js">
-  </script>
-  <script defer="" src="page.js">
-  </script>
- </head>
- <body data-page="dashboard">
-  <aside class="sidebar">
-   <div class="sidebar-title">
-    AI Career
-    <br/>
-    Interviewer
-   </div>
-   <nav class="sidebar-nav">
-    <a data-page="index.html" href="index.html">
-     AI Interview
-    </a>
-    <a data-page="dashboard.html" href="dashboard.html">
-     Dashboard
-    </a>
-    <a data-page="career-intelligence.html" href="career-intelligence.html">
-     Market Intelligence
-    </a>
-    <a data-page="resume.html" href="resume.html">
-     Resume Analyzer
-    </a>
-    <a data-page="job-matching.html" href="job-matching.html">
-     Job Matching
-    </a>
-    <a data-page="skill-gap.html" href="skill-gap.html">
-     Skill Gap
-    </a>
-    <a data-page="roadmap.html" href="roadmap.html">
-     Learning Roadmap
-    </a>
-    <a data-page="progress.html" href="progress.html">
-     My Progress
-    </a>
-    <a data-page="interview-history.html" href="interview-history.html">
-     Interview History
-    </a>
-    <a data-page="profile.html" href="profile.html">
-     My Profile
-    </a>
-    <button class="logout-button" id="logoutButton" type="button">
-     Logout
-    </button>
-   </nav>
-  </aside>
-  <main class="main">
-   <h1>
-    My Progress
-   </h1>
-   <p class="muted">
-    Track your interview performance and skill development.
-   </p>
-   <div class="grid" id="stats">
-    <div class="card loading">
-     Loading...
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>My Progress | AI Career Interviewer</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="auth.js"></script>
+
+</head>
+
+
+<body data-page="progress">
+
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<aside class="sidebar">
+
+    <div class="sidebar-title">
+
+        AI Career
+        <br>
+        Interviewer
+
     </div>
-   </div>
-   <section class="card">
-    <h2>
-     Skill Progress
-    </h2>
-    <div id="skills">
-     Loading...
+
+
+    <nav class="sidebar-nav">
+
+        <a href="index.html">
+            AI Interview
+        </a>
+
+        <a href="dashboard.html">
+            Dashboard
+        </a>
+
+        <a href="career-intelligence.html">
+            Market Intelligence
+        </a>
+
+        <a href="resume.html">
+            Resume Analyzer
+        </a>
+
+        <a href="job-matching.html">
+            Job Matching
+        </a>
+
+        <a href="skill-gap.html">
+            Skill Gap
+        </a>
+
+        <a href="roadmap.html">
+            Learning Roadmap
+        </a>
+
+        <a href="progress.html">
+            My Progress
+        </a>
+
+        <a href="interview-history.html">
+            Interview History
+        </a>
+
+        <a href="profile.html">
+            My Profile
+        </a>
+
+        <button
+            class="logout-button"
+            id="logoutButton"
+            type="button">
+
+            Logout
+
+        </button>
+
+    </nav>
+
+</aside>
+
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="main">
+
+
+    <div class="page-header">
+
+        <h1>
+            My Progress
+        </h1>
+
+        <p class="muted">
+
+            Track your interview performance,
+            skill development and learning progress.
+
+        </p>
+
+
+        <div
+            class="role-badge"
+            id="targetRole">
+
+            Target Role: Loading...
+
+        </div>
+
     </div>
-   </section>
-   <section class="card">
-    <h2>
-     Latest Interview
-    </h2>
-    <div id="recent">
-     Loading...
-    </div>
-   </section>
-  </main>
- </body>
+
+
+
+    <!-- =====================================================
+         STAT CARDS
+    ===================================================== -->
+
+    <section class="stats-grid">
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🎯
+            </div>
+
+            <div class="stat-label">
+                Interviews Completed
+            </div>
+
+            <div
+                class="stat-value"
+                id="interviewCount">
+
+                —
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                ⭐
+            </div>
+
+            <div class="stat-label">
+                Average Score
+            </div>
+
+            <div
+                class="stat-value"
+                id="averageScore">
+
+                —
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🧠
+            </div>
+
+            <div class="stat-label">
+                Skills Practiced
+            </div>
+
+            <div
+                class="stat-value"
+                id="skillsCount">
+
+                —
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                📚
+            </div>
+
+            <div class="stat-label">
+                Roadmap Progress
+            </div>
+
+            <div
+                class="stat-value"
+                id="roadmapProgress">
+
+                0%
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         SKILL PROGRESS
+    ===================================================== -->
+
+    <section class="card">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Skill Progress
+                </h2>
+
+                <p class="muted">
+
+                    Your current interview performance
+                    by evaluated skill.
+
+                </p>
+
+            </div>
+
+
+            <a
+                href="skill-gap.html"
+                class="btn">
+
+                View Skill Gap
+
+            </a>
+
+        </div>
+
+
+        <div id="skillProgress">
+
+            <div class="loading">
+                Loading skill progress...
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         LEARNING ROADMAP
+    ===================================================== -->
+
+    <section class="card">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Learning Roadmap
+                </h2>
+
+                <p class="muted">
+
+                    Track your progress through your
+                    personalized learning plan.
+
+                </p>
+
+            </div>
+
+
+            <a
+                href="roadmap.html"
+                class="btn">
+
+                Open Roadmap
+
+            </a>
+
+        </div>
+
+
+        <div class="roadmap-progress-container">
+
+            <div class="roadmap-progress-header">
+
+                <strong>
+                    Overall completion
+                </strong>
+
+                <strong
+                    id="roadmapPercent">
+
+                    0%
+
+                </strong>
+
+            </div>
+
+
+            <div class="progress-track">
+
+                <div
+                    id="roadmapBar"
+                    class="progress-fill">
+
+                </div>
+
+            </div>
+
+
+            <p
+                class="muted"
+                id="roadmapTasks">
+
+                0 of 4 learning weeks completed.
+
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         LATEST INTERVIEW
+    ===================================================== -->
+
+    <section class="card">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Latest Interview
+                </h2>
+
+                <p class="muted">
+
+                    Your most recent interview performance.
+
+                </p>
+
+            </div>
+
+
+            <a
+                href="interview-history.html"
+                class="btn">
+
+                Interview History
+
+            </a>
+
+        </div>
+
+
+        <div id="latestInterview">
+
+            <div class="loading">
+                Loading latest interview...
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CAREER DEVELOPMENT
+    ===================================================== -->
+
+    <section class="card">
+
+        <h2>
+            Career Development
+        </h2>
+
+        <p class="muted">
+
+            Continue improving the skills most relevant
+            to your target career.
+
+        </p>
+
+
+        <div class="career-grid">
+
+
+            <a
+                href="career-intelligence.html"
+                class="career-card">
+
+                <div class="career-icon">
+                    📊
+                </div>
+
+                <h3>
+                    Market Intelligence
+                </h3>
+
+                <p>
+                    See what employers are currently asking for.
+                </p>
+
+            </a>
+
+
+
+            <a
+                href="job-matching.html"
+                class="career-card">
+
+                <div class="career-icon">
+                    💼
+                </div>
+
+                <h3>
+                    Job Matching
+                </h3>
+
+                <p>
+                    Compare your skills with live job requirements.
+                </p>
+
+            </a>
+
+
+
+            <a
+                href="resume.html"
+                class="career-card">
+
+                <div class="career-icon">
+                    📄
+                </div>
+
+                <h3>
+                    Resume Analyzer
+                </h3>
+
+                <p>
+                    Check your resume against market skills.
+                </p>
+
+            </a>
+
+
+
+            <a
+                href="roadmap.html"
+                class="career-card">
+
+                <div class="career-icon">
+                    🚀
+                </div>
+
+                <h3>
+                    Learning Roadmap
+                </h3>
+
+                <p>
+                    Continue working on your identified skill gaps.
+                </p>
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+
+<style>
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.page-header {
+    margin-bottom: 28px;
+}
+
+.page-header h1 {
+    margin-bottom: 8px;
+}
+
+.role-badge {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 8px 15px;
+    border-radius: 20px;
+    background: #1e3a8a;
+    color: #dbeafe;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 22px;
+}
+
+.stat-icon {
+    font-size: 26px;
+    margin-bottom: 12px;
+}
+
+.stat-label {
+    color: #94a3b8;
+    font-size: 14px;
+    margin-bottom: 7px;
+}
+
+.stat-value {
+    color: #f8fafc;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.card h2 {
+    margin-top: 0;
+    margin-bottom: 6px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+.btn {
+    display: inline-block;
+    padding: 10px 16px;
+    background: #2563eb;
+    color: white;
+    border-radius: 9px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.btn:hover {
+    background: #1d4ed8;
+}
+
+
+/* =========================================================
+   SKILLS
+========================================================= */
+
+.skill-row {
+    padding: 17px 0;
+    border-bottom: 1px solid #334155;
+}
+
+.skill-row:last-child {
+    border-bottom: none;
+}
+
+.skill-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 8px;
+}
+
+.skill-name {
+    font-weight: 600;
+    color: #f8fafc;
+}
+
+.skill-score {
+    color: #93c5fd;
+    font-size: 14px;
+}
+
+.skill-level {
+    color: #94a3b8;
+    font-size: 13px;
+    margin-top: 3px;
+}
+
+.skill-bar {
+    height: 9px;
+    background: #334155;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.skill-fill {
+    height: 100%;
+    background: #2563eb;
+    border-radius: 20px;
+}
+
+
+/* =========================================================
+   ROADMAP
+========================================================= */
+
+.roadmap-progress-container {
+    margin-top: 18px;
+}
+
+.roadmap-progress-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.progress-track {
+    width: 100%;
+    height: 12px;
+    background: #334155;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: #2563eb;
+    border-radius: 20px;
+    transition: width 0.3s ease;
+}
+
+
+/* =========================================================
+   LATEST INTERVIEW
+========================================================= */
+
+.latest-interview {
+    background: #111827;
+    border: 1px solid #374151;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.latest-role {
+    font-size: 20px;
+    font-weight: 700;
+    color: #f8fafc;
+    margin-bottom: 8px;
+}
+
+.latest-meta {
+    color: #94a3b8;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.latest-score {
+    font-size: 28px;
+    font-weight: 700;
+    color: #60a5fa;
+    margin-bottom: 15px;
+}
+
+
+/* =========================================================
+   CAREER CARDS
+========================================================= */
+
+.career-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.career-card {
+    display: block;
+    background: #111827;
+    border: 1px solid #374151;
+    border-radius: 13px;
+    padding: 20px;
+    text-decoration: none;
+    color: inherit;
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.career-card:hover {
+    transform: translateY(-3px);
+    border-color: #2563eb;
+}
+
+.career-icon {
+    font-size: 28px;
+    margin-bottom: 12px;
+}
+
+.career-card h3 {
+    color: #f8fafc;
+    margin: 0 0 8px;
+}
+
+.career-card p {
+    color: #94a3b8;
+    line-height: 1.5;
+    margin: 0;
+}
+
+
+/* =========================================================
+   STATES
+========================================================= */
+
+.loading {
+    padding: 30px 10px;
+    text-align: center;
+    color: #94a3b8;
+}
+
+.empty-state {
+    padding: 30px;
+    text-align: center;
+    background: #111827;
+    border-radius: 12px;
+    color: #94a3b8;
+}
+
+.error-box {
+    background: #451a1a;
+    border: 1px solid #7f1d1d;
+    color: #fecaca;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 1000px) {
+
+    .stats-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .career-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .stats-grid,
+    .career-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-header {
+        flex-direction: column;
+    }
+
+    .section-header .btn {
+        width: 100%;
+        text-align: center;
+    }
+
+}
+
+</style>
+
+
+
+<script>
+
+/* =========================================================
+   API
+========================================================= */
+
+const API_URL =
+    "http://127.0.0.1:5000";
+
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHtml(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        value ?? "";
+
+    return div.innerHTML;
+
+}
+
+
+
+/* =========================================================
+   SUPABASE SESSION
+========================================================= */
+
+async function getSession() {
+
+    if (
+        typeof supabaseClient ===
+        "undefined"
+    ) {
+
+        throw new Error(
+            "Supabase client is not available."
+        );
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .auth
+            .getSession();
+
+
+    if (error) {
+        throw error;
+    }
+
+
+    if (
+        !data ||
+        !data.session
+    ) {
+
+        window.location.href =
+            "login.html";
+
+        return null;
+
+    }
+
+
+    return data.session;
+
+}
+
+
+
+/* =========================================================
+   ROADMAP PROGRESS
+========================================================= */
+
+function loadRoadmapProgress() {
+
+    let progress = {};
+
+    try {
+
+        progress =
+            JSON.parse(
+                localStorage.getItem(
+                    "roadmap_progress"
+                ) || "{}"
+            );
+
+    } catch {
+
+        progress = {};
+
+    }
+
+
+    /*
+        The current roadmap contains 4 weeks.
+        The roadmap page stores completion per week.
+    */
+
+    const totalWeeks = 4;
+
+
+    let completedWeeks = 0;
+
+
+    for (
+        let i = 0;
+        i < totalWeeks;
+        i++
+    ) {
+
+        if (
+            progress[i] === true
+        ) {
+
+            completedWeeks++;
+
+        }
+
+    }
+
+
+    const percentage =
+        Math.round(
+            (
+                completedWeeks /
+                totalWeeks
+            ) * 100
+        );
+
+
+    document
+        .getElementById(
+            "roadmapProgress"
+        )
+        .textContent =
+        `${percentage}%`;
+
+
+    document
+        .getElementById(
+            "roadmapPercent"
+        )
+        .textContent =
+        `${percentage}%`;
+
+
+    document
+        .getElementById(
+            "roadmapBar"
+        )
+        .style.width =
+        `${percentage}%`;
+
+
+    document
+        .getElementById(
+            "roadmapTasks"
+        )
+        .textContent =
+        `${completedWeeks} of ${totalWeeks} learning weeks completed.`;
+
+}
+
+
+
+/* =========================================================
+   LOAD DASHBOARD DATA
+========================================================= */
+
+async function loadProgress() {
+
+    const skillContainer =
+        document.getElementById(
+            "skillProgress"
+        );
+
+
+    const latestContainer =
+        document.getElementById(
+            "latestInterview"
+        );
+
+
+    try {
+
+        const session =
+            await getSession();
+
+
+        if (!session) {
+            return;
+        }
+
+
+        /* =================================================
+           DASHBOARD API
+        ================================================= */
+
+        const response =
+            await fetch(
+
+                `${API_URL}/api/dashboard`,
+
+                {
+
+                    method: "GET",
+
+                    headers: {
+
+                        "Authorization":
+                            `Bearer ${session.access_token}`,
+
+                        "Content-Type":
+                            "application/json"
+
+                    }
+
+                }
+
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            data.status !== "success"
+        ) {
+
+            throw new Error(
+                data.error ||
+                data.message ||
+                "Could not load progress."
+            );
+
+        }
+
+
+        /* =================================================
+           TARGET ROLE
+        ================================================= */
+
+        let targetRole =
+            localStorage.getItem(
+                "career_target_role"
+            ) ||
+
+            localStorage.getItem(
+                "latest_job_match_role"
+            ) ||
+
+            "Java Developer";
+
+
+        if (
+            data.latest_interview &&
+            data.latest_interview.role
+        ) {
+
+            targetRole =
+                data.latest_interview.role;
+
+        }
+
+
+        targetRole =
+            String(targetRole)
+                .replace(/\b\w/g, c =>
+                    c.toUpperCase()
+                );
+
+
+        document
+            .getElementById(
+                "targetRole"
+            )
+            .textContent =
+            `Target Role: ${targetRole}`;
+
+
+
+        /* =================================================
+           INTERVIEW COUNT
+        ================================================= */
+
+        const interviewCount =
+            Number(
+                data.interview_count ||
+                data.total_interviews ||
+                0
+            );
+
+
+        document
+            .getElementById(
+                "interviewCount"
+            )
+            .textContent =
+            interviewCount;
+
+
+
+        /* =================================================
+           AVERAGE SCORE
+        ================================================= */
+
+        const average =
+            Number(
+                data.average_score
+            );
+
+
+        document
+            .getElementById(
+                "averageScore"
+            )
+            .textContent =
+            Number.isFinite(
+                average
+            )
+                ? `${average.toFixed(1)}/10`
+                : "—";
+
+
+
+        /* =================================================
+           SKILLS
+        ================================================= */
+
+        const skills =
+            Array.isArray(
+                data.skill_progress
+            )
+                ? data.skill_progress
+                : [];
+
+
+        document
+            .getElementById(
+                "skillsCount"
+            )
+            .textContent =
+            skills.length;
+
+
+
+        /* =================================================
+           SKILL PROGRESS
+        ================================================= */
+
+        if (!skills.length) {
+
+            skillContainer.innerHTML = `
+
+                <div class="empty-state">
+
+                    No interview skills have been
+                    recorded yet.
+
+                    <br><br>
+
+                    <a
+                        href="index.html"
+                        class="btn">
+
+                        Start AI Interview
+
+                    </a>
+
+                </div>
+
+            `;
+
+        } else {
+
+            skillContainer.innerHTML =
+                skills
+                    .map(
+                        item => {
+
+                            const score =
+                                Math.max(
+                                    0,
+                                    Math.min(
+                                        10,
+                                        Number(
+                                            item.score ||
+                                            0
+                                        )
+                                    )
+                                );
+
+
+                            const percentage =
+                                score * 10;
+
+
+                            return `
+
+                                <div class="skill-row">
+
+                                    <div class="skill-header">
+
+                                        <div>
+
+                                            <div class="skill-name">
+
+                                                ${escapeHtml(
+                                                    item.skill
+                                                )}
+
+                                            </div>
+
+                                            <div class="skill-level">
+
+                                                ${escapeHtml(
+                                                    item.level ||
+                                                    "Developing"
+                                                )}
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="skill-score">
+
+                                            ${score.toFixed(1)}/10
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="skill-bar">
+
+                                        <div
+                                            class="skill-fill"
+                                            style="
+                                                width:${percentage}%;
+                                            ">
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            `;
+
+                        }
+                    )
+                    .join("");
+
+        }
+
+
+
+        /* =================================================
+           LATEST INTERVIEW
+        ================================================= */
+
+        const latest =
+            data.latest_interview;
+
+
+        if (!latest) {
+
+            latestContainer.innerHTML = `
+
+                <div class="empty-state">
+
+                    No completed interview found yet.
+
+                    <br><br>
+
+                    <a
+                        href="index.html"
+                        class="btn">
+
+                        Start AI Interview
+
+                    </a>
+
+                </div>
+
+            `;
+
+        } else {
+
+            const score =
+                Number(
+                    latest.total_score ??
+                    latest.score ??
+                    0
+                );
+
+
+            const date =
+                latest.created_at
+                    ? new Date(
+                        latest.created_at
+                    ).toLocaleString()
+                    : "Date unavailable";
+
+
+            latestContainer.innerHTML = `
+
+                <div class="latest-interview">
+
+                    <div class="latest-role">
+
+                        ${escapeHtml(
+                            latest.role ||
+                            "Interview"
+                        )}
+
+                    </div>
+
+
+                    <div class="latest-meta">
+
+                        ${escapeHtml(
+                            date
+                        )}
+
+                    </div>
+
+
+                    <div class="latest-score">
+
+                        ${Number.isFinite(score)
+                            ? `${score}/10`
+                            : "—"}
+
+                    </div>
+
+
+                    ${
+                        latest.id
+                            ? `
+
+                                <a
+                                    href="interview-details.html?id=${encodeURIComponent(
+                                        latest.id
+                                    )}"
+                                    class="btn">
+
+                                    View Interview Report
+
+                                </a>
+
+                            `
+                            : ""
+                    }
+
+                </div>
+
+            `;
+
+        }
+
+
+
+        /* =================================================
+           CAREER LEVEL
+        ================================================= */
+
+        /*
+            Keep the backend career level available
+            without displaying an unnecessary duplicate card.
+        */
+
+        if (
+            data.career_level
+        ) {
+
+            document.title =
+                `My Progress - ${data.career_level}`;
+
+        }
+
+
+
+    } catch (error) {
+
+        console.error(
+            "Progress error:",
+            error
+        );
+
+
+        skillContainer.innerHTML = `
+
+            <div class="error-box">
+
+                <strong>
+                    Unable to load progress
+                </strong>
+
+                <br><br>
+
+                ${escapeHtml(
+                    error.message
+                )}
+
+            </div>
+
+        `;
+
+
+        latestContainer.innerHTML = "";
+
+    }
+
+
+    /* =====================================================
+       ROADMAP
+    ===================================================== */
+
+    loadRoadmapProgress();
+
+}
+
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+const logoutButton =
+    document.getElementById(
+        "logoutButton"
+    );
+
+
+if (logoutButton) {
+
+    logoutButton.addEventListener(
+        "click",
+        async () => {
+
+            try {
+
+                await supabaseClient
+                    .auth
+                    .signOut();
+
+            } catch (error) {
+
+                console.error(
+                    "Logout error:",
+                    error
+                );
+
+            }
+
+
+            window.location.href =
+                "login.html";
+
+        }
+    );
+
+}
+
+
+
+/* =========================================================
+   START
+========================================================= */
+
+loadProgress();
+
+</script>
+
+
+</body>
+
 </html>

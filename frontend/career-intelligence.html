@@ -1,91 +1,1339 @@
 <!DOCTYPE html>
 <html lang="en">
- <head>
-  <title>
-   Market Intelligence | AI Career Interviewer
-  </title>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <link href="style.css" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-  </script>
-  <script src="auth.js">
-  </script>
-  <script defer="" src="page.js">
-  </script>
- </head>
- <body data-page="market">
-  <aside class="sidebar">
-   <div class="sidebar-title">
-    AI Career
-    <br/>
-    Interviewer
-   </div>
-   <nav class="sidebar-nav">
-    <a data-page="index.html" href="index.html">
-     AI Interview
-    </a>
-    <a data-page="dashboard.html" href="dashboard.html">
-     Dashboard
-    </a>
-    <a data-page="career-intelligence.html" href="career-intelligence.html">
-     Market Intelligence
-    </a>
-    <a data-page="resume.html" href="resume.html">
-     Resume Analyzer
-    </a>
-    <a data-page="job-matching.html" href="job-matching.html">
-     Job Matching
-    </a>
-    <a data-page="skill-gap.html" href="skill-gap.html">
-     Skill Gap
-    </a>
-    <a data-page="roadmap.html" href="roadmap.html">
-     Learning Roadmap
-    </a>
-    <a data-page="progress.html" href="progress.html">
-     My Progress
-    </a>
-    <a data-page="interview-history.html" href="interview-history.html">
-     Interview History
-    </a>
-    <a data-page="profile.html" href="profile.html">
-     My Profile
-    </a>
-    <button class="logout-button" id="logoutButton" type="button">
-     Logout
-    </button>
-   </nav>
-  </aside>
-  <main class="main">
-   <h1>
-    Market Intelligence
-   </h1>
-   <p class="muted">
-    Live job-market skills powered by SerpApi.
-   </p>
-   <section class="card">
-    <div class="grid">
-     <div>
-      <label>
-       Target role
-      </label>
-      <input class="input" id="role" value="Java Developer"/>
-     </div>
-     <div>
-      <label>
-       Location
-      </label>
-      <input class="input" id="location" value="Pune"/>
-     </div>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Career Intelligence | AI Career Interviewer</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+
+        body {
+            margin: 0;
+            background: #0f172a;
+            color: #e5e7eb;
+            font-family: Arial, sans-serif;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+
+            width: 280px;
+            height: 100vh;
+
+            background: #111827;
+
+            padding: 28px 20px;
+
+            box-sizing: border-box;
+
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            margin: 0 0 30px;
+            color: white;
+        }
+
+        .sidebar-section {
+            color: #64748b;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            margin: 24px 14px 8px;
+        }
+
+        .sidebar a {
+            display: block;
+
+            color: #cbd5e1;
+
+            text-decoration: none;
+
+            padding: 12px 14px;
+
+            margin: 5px 0;
+
+            border-radius: 8px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #1f2937;
+            color: white;
+        }
+
+        .main {
+            margin-left: 280px;
+
+            padding: 40px;
+
+            min-height: 100vh;
+
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+        }
+
+        .card {
+            background: #1e293b;
+
+            border: 1px solid #334155;
+
+            padding: 30px;
+
+            border-radius: 16px;
+
+            margin-top: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 24px;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: #e5e7eb;
+
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+
+            box-sizing: border-box;
+
+            padding: 15px;
+
+            background: #0f172a;
+
+            color: white;
+
+            border: 1px solid #475569;
+
+            border-radius: 10px;
+
+            font-size: 16px;
+        }
+
+        input:focus {
+            outline: none;
+
+            border-color: #3b82f6;
+        }
+
+        button {
+            margin-top: 24px;
+
+            padding: 14px 22px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #2563eb;
+
+            color: white;
+
+            font-size: 16px;
+
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 18px;
+
+            color: #93c5fd;
+
+            font-size: 16px;
+        }
+
+        .error {
+            color: #fca5a5;
+        }
+
+        .success {
+            color: #86efac;
+        }
+
+        .stats {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 18px;
+
+            margin-top: 25px;
+        }
+
+        .stat-card {
+            background: #0f172a;
+
+            border: 1px solid #334155;
+
+            border-radius: 12px;
+
+            padding: 22px;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+
+            font-size: 14px;
+
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 30px;
+
+            font-weight: bold;
+
+            color: white;
+        }
+
+        .skills {
+            margin-top: 25px;
+        }
+
+        .skill-item {
+            margin-bottom: 20px;
+        }
+
+        .skill-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-bottom: 8px;
+
+            color: #e5e7eb;
+        }
+
+        .progress {
+            width: 100%;
+
+            height: 10px;
+
+            background: #334155;
+
+            border-radius: 10px;
+
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+
+            background: #3b82f6;
+
+            border-radius: 10px;
+
+            transition: width 0.5s ease;
+        }
+
+        .empty {
+            color: #94a3b8;
+
+            padding: 20px 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                width: 220px;
+            }
+
+            .main {
+                margin-left: 220px;
+            }
+
+            .form-grid,
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside class="sidebar">
+
+    <h2>
+        AI Career Interviewer
+    </h2>
+
+
+    <div class="sidebar-section">
+        Workspace
     </div>
-    <button id="marketButton" type="button">
-     Analyze Live Jobs
-    </button>
-   </section>
-   <section class="card" id="marketOut">
-    Click Analyze Live Jobs.
-   </section>
-  </main>
- </body>
+
+
+    <a href="dashboard.html">
+        Dashboard
+    </a>
+
+
+    <a href="index.html">
+        AI Interview
+    </a>
+
+
+    <a href="career-intelligence.html"
+       class="active">
+        Market Intelligence
+    </a>
+
+
+    <div class="sidebar-section">
+        Career
+    </div>
+
+
+    <a href="resume.html">
+        Resume Analyzer
+    </a>
+
+
+    <a href="job-matching.html">
+        Job Matching
+    </a>
+
+
+    <a href="skill-gap.html">
+        Skill Gap
+    </a>
+
+
+    <a href="roadmap.html">
+        Learning Roadmap
+    </a>
+
+
+    <a href="interview-history.html">
+        Interview History
+    </a>
+
+
+    <a href="progress.html">
+        My Progress
+    </a>
+
+
+    <a href="profile.html">
+        My Profile
+    </a>
+
+
+    <div class="sidebar-section">
+        Account
+    </div>
+
+
+    <a href="#"
+       onclick="logoutUser(); return false;">
+        Logout
+    </a>
+
+</aside>
+
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="main">
+
+    <h1>
+        Live Job Market
+    </h1>
+
+    <p class="subtitle">
+        Prepare for jobs that are actually available right now.
+    </p>
+
+
+
+    <!-- =================================================
+         INPUT
+    ================================================== -->
+
+    <section class="card">
+
+        <div class="form-grid">
+
+            <div>
+
+                <label for="role">
+                    Target role
+                </label>
+
+                <input
+                    id="role"
+                    type="text"
+                    placeholder="Java Developer"
+                    value="java developer"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label for="location">
+                    Location
+                </label>
+
+                <input
+                    id="location"
+                    type="text"
+                    placeholder="India"
+                    value="India"
+                >
+
+            </div>
+
+        </div>
+
+
+        <button
+            id="analyzeButton"
+            type="button">
+
+            Analyze Live Job Market
+
+        </button>
+
+
+        <div
+            id="marketMessage"
+            class="message">
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =================================================
+         MARKET RESULTS
+    ================================================== -->
+
+    <section
+        id="marketSection"
+        class="hidden">
+
+
+        <!-- STATS -->
+
+        <div class="stats">
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Live Jobs Found
+                </div>
+
+                <div
+                    id="jobsFound"
+                    class="stat-value">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Target Role
+                </div>
+
+                <div
+                    id="roleDisplay"
+                    class="stat-value"
+                    style="font-size:22px;">
+
+                    -
+
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Location
+                </div>
+
+                <div
+                    id="locationDisplay"
+                    class="stat-value"
+                    style="font-size:22px;">
+
+                    -
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- MARKET SKILLS -->
+
+        <section class="card skills">
+
+            <h2>
+                Top Market Skills
+            </h2>
+
+            <p class="subtitle">
+                Skills appearing frequently in current job listings.
+            </p>
+
+
+            <div id="skillsContainer">
+
+                <div class="empty">
+                    No market data yet.
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- MISSING SKILLS -->
+
+        <section class="card">
+
+            <h2>
+                Skills You May Need
+            </h2>
+
+            <p class="subtitle">
+                Skills found in the current market that are not yet reflected in your tracked progress.
+            </p>
+
+
+            <div id="missingSkillsContainer">
+
+                <div class="empty">
+                    Analyze the market to see skill gaps.
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </section>
+
+</main>
+
+
+
+<!-- =====================================================
+     SUPABASE
+===================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="auth.js"></script>
+
+
+
+<!-- =====================================================
+     CAREER INTELLIGENCE LOGIC
+===================================================== -->
+
+<script>
+
+const API_URL =
+    "http://127.0.0.1:5000";
+
+
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const roleInput =
+    document.getElementById("role");
+
+const locationInput =
+    document.getElementById("location");
+
+const analyzeButton =
+    document.getElementById("analyzeButton");
+
+const marketMessage =
+    document.getElementById("marketMessage");
+
+const marketSection =
+    document.getElementById("marketSection");
+
+const jobsFound =
+    document.getElementById("jobsFound");
+
+const roleDisplay =
+    document.getElementById("roleDisplay");
+
+const locationDisplay =
+    document.getElementById("locationDisplay");
+
+const skillsContainer =
+    document.getElementById("skillsContainer");
+
+const missingSkillsContainer =
+    document.getElementById(
+        "missingSkillsContainer"
+    );
+
+
+
+/* =====================================================
+   GET CURRENT SESSION
+===================================================== */
+
+async function getAccessToken() {
+
+    if (
+        typeof supabaseClient ===
+        "undefined"
+    ) {
+
+        throw new Error(
+            "Supabase client is not initialized."
+        );
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth.getSession();
+
+
+    if (error) {
+
+        console.error(
+            "Supabase session error:",
+            error
+        );
+
+        throw new Error(
+            "Unable to get Supabase session."
+        );
+
+    }
+
+
+    if (
+        !data ||
+        !data.session ||
+        !data.session.access_token
+    ) {
+
+        throw new Error(
+            "Your session has expired. Please log in again."
+        );
+
+    }
+
+
+    return data.session.access_token;
+
+}
+
+
+
+/* =====================================================
+   ANALYZE MARKET
+===================================================== */
+
+async function analyzeMarket() {
+
+    const role =
+        roleInput.value.trim();
+
+    const location =
+        locationInput.value.trim()
+        || "India";
+
+
+    if (!role) {
+
+        marketMessage.textContent =
+            "Please enter a target role.";
+
+        marketMessage.className =
+            "message error";
+
+        return;
+
+    }
+
+
+    analyzeButton.disabled =
+        true;
+
+    analyzeButton.textContent =
+        "Analyzing...";
+
+
+    marketMessage.textContent =
+        "Connecting to live job market...";
+
+    marketMessage.className =
+        "message";
+
+
+
+    try {
+
+        /* ---------------------------------------------
+           GET AUTH TOKEN
+        --------------------------------------------- */
+
+        const accessToken =
+            await getAccessToken();
+
+
+
+        /* ---------------------------------------------
+           BUILD API URL
+        --------------------------------------------- */
+
+        const url =
+            `${API_URL}/api/career-intelligence` +
+            `?role=${encodeURIComponent(role)}` +
+            `&location=${encodeURIComponent(location)}`;
+
+
+
+        console.log(
+            "Career Intelligence URL:",
+            url
+        );
+
+
+
+        /* ---------------------------------------------
+           CALL BACKEND
+        --------------------------------------------- */
+
+        const response =
+            await fetch(
+                url,
+                {
+                    method: "GET",
+
+                    headers: {
+
+                        "Authorization":
+                            `Bearer ${accessToken}`,
+
+                        "Content-Type":
+                            "application/json"
+
+                    }
+                }
+            );
+
+
+
+        /* ---------------------------------------------
+           PARSE RESPONSE
+        --------------------------------------------- */
+
+        const data =
+            await response.json();
+
+
+
+        console.log(
+            "Career Intelligence Response:",
+            data
+        );
+
+
+
+        /* ---------------------------------------------
+           HTTP ERROR
+        --------------------------------------------- */
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                data.error ||
+                `Server error: ${response.status}`
+            );
+
+        }
+
+
+
+        /* ---------------------------------------------
+           APPLICATION ERROR
+        --------------------------------------------- */
+
+        if (
+            data.status &&
+            data.status !== "success"
+        ) {
+
+            throw new Error(
+                data.message ||
+                data.error ||
+                "Career intelligence analysis failed."
+            );
+
+        }
+
+
+
+        /* ---------------------------------------------
+           DISPLAY RESULTS
+        --------------------------------------------- */
+
+        displayMarketData(data);
+
+
+
+        marketMessage.textContent =
+            "Live market analysis completed successfully.";
+
+        marketMessage.className =
+            "message success";
+
+
+
+    } catch (error) {
+
+        console.error(
+            "Career Intelligence Error:",
+            error
+        );
+
+
+        marketMessage.textContent =
+            error.message ||
+            "Unable to analyze the live job market.";
+
+        marketMessage.className =
+            "message error";
+
+
+        /*
+         * If the session expired, send user
+         * back to login.
+         */
+
+        if (
+            error.message.includes(
+                "session has expired"
+            )
+        ) {
+
+            setTimeout(
+                () => {
+                    window.location.href =
+                        "login.html";
+                },
+                1500
+            );
+
+        }
+
+
+    } finally {
+
+        analyzeButton.disabled =
+            false;
+
+        analyzeButton.textContent =
+            "Analyze Live Job Market";
+
+    }
+
+}
+
+
+
+/* =====================================================
+   DISPLAY MARKET DATA
+===================================================== */
+
+function displayMarketData(data) {
+
+    marketSection.classList.remove(
+        "hidden"
+    );
+
+
+
+    /* ---------------------------------------------
+       BASIC INFORMATION
+    --------------------------------------------- */
+
+    const liveJobs =
+        Number(
+            data.live_jobs || 0
+        );
+
+
+    jobsFound.textContent =
+        liveJobs;
+
+
+    roleDisplay.textContent =
+        data.role ||
+        roleInput.value ||
+        "-";
+
+
+    locationDisplay.textContent =
+        data.location ||
+        locationInput.value ||
+        "India";
+
+
+
+    /* ---------------------------------------------
+       MARKET SKILLS
+    --------------------------------------------- */
+
+    const marketSkills =
+        Array.isArray(
+            data.market_skills
+        )
+            ? data.market_skills
+            : [];
+
+
+    skillsContainer.innerHTML =
+        "";
+
+
+    if (
+        marketSkills.length === 0
+    ) {
+
+        skillsContainer.innerHTML = `
+            <div class="empty">
+                No market skills were detected.
+            </div>
+        `;
+
+    } else {
+
+        const highestJobCount =
+            Math.max(
+                ...marketSkills.map(
+                    item =>
+                        Number(
+                            item.job_count || 0
+                        )
+                ),
+                1
+            );
+
+
+        marketSkills.forEach(
+            item => {
+
+                const skill =
+                    item.skill ||
+                    "Unknown skill";
+
+
+                const jobCount =
+                    Number(
+                        item.job_count || 0
+                    );
+
+
+                const percentage =
+                    Math.min(
+                        (
+                            jobCount /
+                            highestJobCount
+                        ) * 100,
+                        100
+                    );
+
+
+                const skillDiv =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                skillDiv.className =
+                    "skill-item";
+
+
+                skillDiv.innerHTML = `
+
+                    <div class="skill-header">
+
+                        <span>
+                            ${escapeHtml(skill)}
+                        </span>
+
+                        <span>
+                            ${jobCount} jobs
+                        </span>
+
+                    </div>
+
+
+                    <div class="progress">
+
+                        <div
+                            class="progress-bar"
+                            style="width:${percentage}%">
+
+                        </div>
+
+                    </div>
+
+                `;
+
+
+                skillsContainer.appendChild(
+                    skillDiv
+                );
+
+            }
+        );
+
+    }
+
+
+
+    /* ---------------------------------------------
+       MISSING MARKET SKILLS
+    --------------------------------------------- */
+
+    const missingSkills =
+        Array.isArray(
+            data.missing_market_skills
+        )
+            ? data.missing_market_skills
+            : [];
+
+
+    missingSkillsContainer.innerHTML =
+        "";
+
+
+    if (
+        missingSkills.length === 0
+    ) {
+
+        missingSkillsContainer.innerHTML = `
+            <div class="empty">
+                No missing market skills detected yet.
+            </div>
+        `;
+
+    } else {
+
+        missingSkills.forEach(
+            item => {
+
+                const skill =
+                    typeof item === "string"
+                        ? item
+                        : item.skill;
+
+
+                const jobCount =
+                    typeof item === "object"
+                        ? Number(
+                            item.job_count || 0
+                        )
+                        : 0;
+
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                div.style.padding =
+                    "14px 0";
+
+
+                div.style.borderBottom =
+                    "1px solid #334155";
+
+
+                div.innerHTML = `
+
+                    <strong>
+                        ${escapeHtml(
+                            skill || "Unknown skill"
+                        )}
+                    </strong>
+
+                    ${
+                        jobCount
+                            ? `<span style="color:#94a3b8">
+                                — ${jobCount} jobs
+                               </span>`
+                            : ""
+                    }
+
+                `;
+
+
+                missingSkillsContainer
+                    .appendChild(div);
+
+            }
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   HTML ESCAPE
+===================================================== */
+
+function escapeHtml(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        value ?? "";
+
+    return div.innerHTML;
+
+}
+
+
+
+/* =====================================================
+   BUTTON
+===================================================== */
+
+analyzeButton.addEventListener(
+    "click",
+    analyzeMarket
+);
+
+
+
+/* =====================================================
+   LOAD PROFILE VALUES
+===================================================== */
+
+async function loadProfileValues() {
+
+    try {
+
+        const accessToken =
+            await getAccessToken();
+
+
+        const response =
+            await fetch(
+                `${API_URL}/api/career-intelligence`,
+                {
+                    method: "GET",
+
+                    headers: {
+
+                        "Authorization":
+                            `Bearer ${accessToken}`,
+
+                        "Content-Type":
+                            "application/json"
+
+                    }
+                }
+            );
+
+
+        if (!response.ok) {
+
+            return;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            data.status !== "success"
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            data.role &&
+            !roleInput.value.trim()
+        ) {
+
+            roleInput.value =
+                data.role;
+
+        }
+
+
+        if (
+            data.location
+        ) {
+
+            locationInput.value =
+                data.location;
+
+        }
+
+
+    } catch (error) {
+
+        console.log(
+            "Profile auto-load skipped:",
+            error.message
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
+
+        try {
+
+            await getAccessToken();
+
+        } catch (error) {
+
+            console.log(
+                "No active session."
+            );
+
+            return;
+
+        }
+
+    }
+);
+
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+async function logoutUser() {
+
+    try {
+
+        await supabaseClient.auth.signOut();
+
+    } catch (error) {
+
+        console.error(
+            "Logout error:",
+            error
+        );
+
+    }
+
+
+    window.location.href =
+        "login.html";
+
+}
+
+</script>
+
+</body>
+
 </html>

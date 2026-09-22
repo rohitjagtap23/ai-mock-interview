@@ -1,90 +1,1477 @@
 <!DOCTYPE html>
 <html lang="en">
- <head>
-  <title>
-   Job Matching | AI Career Interviewer
-  </title>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <link href="style.css" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-  </script>
-  <script src="auth.js">
-  </script>
-  <script defer="" src="page.js">
-  </script>
- </head>
- <body data-page="jobs">
-  <aside class="sidebar">
-   <div class="sidebar-title">
-    AI Career
-    <br/>
-    Interviewer
-   </div>
-   <nav class="sidebar-nav">
-    <a data-page="index.html" href="index.html">
-     AI Interview
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Job Matching | AI Career Interviewer</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .page-container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 30px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: 32px;
+        }
+
+        .header p {
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .search-card {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, .06);
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            padding: 12px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #2563eb;
+        }
+
+        .search-button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 13px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .search-button:hover {
+            background: #1d4ed8;
+        }
+
+        .search-button:disabled {
+            background: #93c5fd;
+            cursor: not-allowed;
+        }
+
+        .status {
+            display: none;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .status.loading {
+            display: block;
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .status.success {
+            display: block;
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .status.error {
+            display: block;
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        .results-header {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .results-header h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .job-count {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        #jobsContainer {
+            display: grid;
+            gap: 20px;
+        }
+
+        .job-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, .05);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .job-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, .08);
+        }
+
+        .job-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .job-info {
+            flex: 1;
+        }
+
+        .job-title {
+            margin: 0 0 8px;
+            font-size: 20px;
+            color: #111827;
+        }
+
+        .company {
+            font-size: 15px;
+            color: #374151;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .location {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .match-box {
+            min-width: 95px;
+            text-align: center;
+        }
+
+        .match-number {
+            font-size: 25px;
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .match-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .progress-container {
+            margin-top: 18px;
+        }
+
+        .progress-background {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #2563eb;
+            border-radius: 20px;
+        }
+
+        .skills-section {
+            margin-top: 20px;
+        }
+
+        .skills-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        .skill {
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .skill.match {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .skill.missing {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .job-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 22px;
+        }
+
+        .view-button,
+        .original-button {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .view-button {
+            background: #2563eb;
+            color: white;
+        }
+
+        .view-button:hover {
+            background: #1d4ed8;
+        }
+
+        .original-button {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .original-button:hover {
+            background: #e5e7eb;
+        }
+
+        .empty-state {
+            display: none;
+            text-align: center;
+            background: white;
+            padding: 60px 20px;
+            border-radius: 16px;
+            color: #6b7280;
+        }
+
+        .empty-state h3 {
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .loading-container {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e5e7eb;
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+            margin: auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 800px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .job-top {
+                flex-direction: column;
+            }
+
+            .match-box {
+                text-align: left;
+            }
+
+            .page-container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page-container">
+
+    <a href="dashboard.html" class="back-link">
+        ← Back to Dashboard
     </a>
-    <a data-page="dashboard.html" href="dashboard.html">
-     Dashboard
-    </a>
-    <a data-page="career-intelligence.html" href="career-intelligence.html">
-     Market Intelligence
-    </a>
-    <a data-page="resume.html" href="resume.html">
-     Resume Analyzer
-    </a>
-    <a data-page="job-matching.html" href="job-matching.html">
-     Job Matching
-    </a>
-    <a data-page="skill-gap.html" href="skill-gap.html">
-     Skill Gap
-    </a>
-    <a data-page="roadmap.html" href="roadmap.html">
-     Learning Roadmap
-    </a>
-    <a data-page="progress.html" href="progress.html">
-     My Progress
-    </a>
-    <a data-page="interview-history.html" href="interview-history.html">
-     Interview History
-    </a>
-    <a data-page="profile.html" href="profile.html">
-     My Profile
-    </a>
-    <button class="logout-button" id="logoutButton" type="button">
-     Logout
-    </button>
-   </nav>
-  </aside>
-  <main class="main">
-   <h1>
-    Job Matching
-   </h1>
-   <p class="muted">
-    Compare your career profile with live job listings.
-   </p>
-   <section class="card">
-    <div class="grid">
-     <div>
-      <label>
-       Role
-      </label>
-      <input class="input" id="role" value="Java Developer"/>
-     </div>
-     <div>
-      <label>
-       Location
-      </label>
-      <input class="input" id="location" value="Pune"/>
-     </div>
+
+    <div class="header">
+
+        <h1>Job Matching</h1>
+
+        <p>
+            Compare your career profile with live job listings.
+        </p>
+
     </div>
-    <button id="matchButton" type="button">
-     Find Matching Jobs
-    </button>
-   </section>
-   <section id="matchOut">
-   </section>
-  </main>
- </body>
+
+
+    <!-- SEARCH -->
+
+    <div class="search-card">
+
+        <div class="form-grid">
+
+            <div class="form-group">
+
+                <label for="role">
+                    Role
+                </label>
+
+                <input
+                    id="role"
+                    type="text"
+                    value="Java Developer"
+                    placeholder="e.g. Java Developer"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="location">
+                    Location
+                </label>
+
+                <input
+                    id="location"
+                    type="text"
+                    value="Pune"
+                    placeholder="e.g. Pune"
+                >
+
+            </div>
+
+
+            <button
+                id="findJobsButton"
+                class="search-button"
+                type="button"
+            >
+                Find Matching Jobs
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- STATUS -->
+
+    <div id="status" class="status"></div>
+
+
+    <!-- LOADING -->
+
+    <div
+        id="loadingContainer"
+        class="loading-container"
+    >
+
+        <div class="spinner"></div>
+
+        <p>
+            Searching live jobs and calculating your skill match...
+        </p>
+
+    </div>
+
+
+    <!-- RESULTS HEADER -->
+
+    <div
+        id="resultsHeader"
+        class="results-header"
+    >
+
+        <h2>
+            Matching Jobs
+        </h2>
+
+        <span
+            id="jobCount"
+            class="job-count"
+        ></span>
+
+    </div>
+
+
+    <!-- JOBS -->
+
+    <div id="jobsContainer"></div>
+
+
+    <!-- EMPTY -->
+
+    <div
+        id="emptyState"
+        class="empty-state"
+    >
+
+        <h3>
+            No matching jobs found
+        </h3>
+
+        <p>
+            Try another role or location.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- IMPORTANT:
+     auth.js loads BEFORE the JavaScript below.
+     Therefore supabaseClient is declared only once.
+-->
+
+<script src="auth.js"></script>
+
+
+<script>
+
+    const API_BASE_URL =
+        "http://127.0.0.1:5000";
+
+
+    const roleInput =
+        document.getElementById("role");
+
+    const locationInput =
+        document.getElementById("location");
+
+    const findJobsButton =
+        document.getElementById("findJobsButton");
+
+    const statusBox =
+        document.getElementById("status");
+
+    const loadingContainer =
+        document.getElementById("loadingContainer");
+
+    const resultsHeader =
+        document.getElementById("resultsHeader");
+
+    const jobCount =
+        document.getElementById("jobCount");
+
+    const jobsContainer =
+        document.getElementById("jobsContainer");
+
+    const emptyState =
+        document.getElementById("emptyState");
+
+
+    /*
+     * STATUS
+     */
+
+    function showStatus(message, type) {
+
+        statusBox.textContent =
+            message;
+
+        statusBox.className =
+            `status ${type}`;
+
+    }
+
+
+    /*
+     * LOADING
+     */
+
+    function setLoading(isLoading) {
+
+        loadingContainer.style.display =
+            isLoading
+                ? "block"
+                : "none";
+
+
+        findJobsButton.disabled =
+            isLoading;
+
+
+        findJobsButton.textContent =
+            isLoading
+                ? "Searching..."
+                : "Find Matching Jobs";
+
+    }
+
+
+    /*
+     * GET SUPABASE SESSION
+     */
+
+    async function getAccessToken() {
+
+        if (
+            typeof supabaseClient ===
+            "undefined"
+        ) {
+
+            throw new Error(
+                "Supabase client is not initialized. Check auth.js."
+            );
+
+        }
+
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .auth
+                .getSession();
+
+
+        if (error) {
+
+            throw new Error(
+                "Unable to get login session: " +
+                error.message
+            );
+
+        }
+
+
+        if (
+            !data ||
+            !data.session
+        ) {
+
+            throw new Error(
+                "You are not logged in. Please login first."
+            );
+
+        }
+
+
+        return data.session.access_token;
+
+    }
+
+
+    /*
+     * NORMALIZE SKILLS
+     */
+
+    function normalizeSkills(skills) {
+
+        if (!Array.isArray(skills)) {
+
+            return [];
+
+        }
+
+
+        return skills
+            .map(skill => {
+
+                if (
+                    typeof skill ===
+                    "string"
+                ) {
+
+                    return skill;
+
+                }
+
+
+                if (
+                    skill &&
+                    skill.skill
+                ) {
+
+                    return skill.skill;
+
+                }
+
+
+                if (
+                    skill &&
+                    skill.name
+                ) {
+
+                    return skill.name;
+
+                }
+
+
+                return null;
+
+            })
+            .filter(Boolean);
+
+    }
+
+
+    /*
+     * MATCH SCORE
+     */
+
+    function getMatchScore(job) {
+
+        const value =
+            job.match_score ??
+            job.match_percentage ??
+            job.matchPercent ??
+            job.score ??
+            job.match ??
+            0;
+
+
+        const score =
+            Number(value);
+
+
+        if (
+            !Number.isFinite(score)
+        ) {
+
+            return 0;
+
+        }
+
+
+        return Math.round(
+            score * 10
+        ) / 10;
+
+    }
+
+
+    /*
+     * JOB TITLE
+     */
+
+    function getJobTitle(job) {
+
+        return (
+            job.title ||
+            job.job_title ||
+            job.position ||
+            "Job Position"
+        );
+
+    }
+
+
+    /*
+     * COMPANY
+     */
+
+    function getCompany(job) {
+
+        return (
+            job.company_name ||
+            job.company ||
+            job.employer_name ||
+            "Company not specified"
+        );
+
+    }
+
+
+    /*
+     * LOCATION
+     */
+
+    function getLocation(job) {
+
+        return (
+            job.location ||
+            job.job_location ||
+            "Location not specified"
+        );
+
+    }
+
+
+    /*
+     * ORIGINAL JOB URL
+     */
+
+    function getOriginalUrl(job) {
+
+        return (
+            job.job_url ||
+            job.link ||
+            job.url ||
+            job.apply_link ||
+            job.apply_url ||
+            ""
+        );
+
+    }
+
+
+    /*
+     * HTML ESCAPE
+     */
+
+    function escapeHtml(value) {
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+
+            return "";
+
+        }
+
+
+        return String(value)
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+    }
+
+
+    /*
+     * SKILL BADGES
+     */
+
+    function createSkillBadges(
+        skills,
+        className
+    ) {
+
+        const normalized =
+            normalizeSkills(skills);
+
+
+        if (
+            normalized.length === 0
+        ) {
+
+            return `
+                <span class="skill ${className}">
+                    None detected
+                </span>
+            `;
+
+        }
+
+
+        return normalized
+            .slice(0, 12)
+            .map(skill => {
+
+                return `
+                    <span class="skill ${className}">
+                        ${escapeHtml(skill)}
+                    </span>
+                `;
+
+            })
+            .join("");
+
+    }
+
+
+    /*
+     * RENDER ONE JOB
+     */
+
+    function renderJob(job) {
+
+        const title =
+            getJobTitle(job);
+
+        const company =
+            getCompany(job);
+
+        const location =
+            getLocation(job);
+
+        const score =
+            getMatchScore(job);
+
+
+        const matchedSkills =
+            normalizeSkills(
+                job.matched_skills ||
+                job.matchedSkills ||
+                job.matching_skills ||
+                []
+            );
+
+
+        const missingSkills =
+            normalizeSkills(
+                job.missing_skills ||
+                job.missingSkills ||
+                job.skills_to_improve ||
+                []
+            );
+
+
+        const originalUrl =
+            getOriginalUrl(job);
+
+
+        const encodedJob =
+            encodeURIComponent(
+                JSON.stringify(job)
+            );
+
+
+        const card =
+            document.createElement(
+                "div"
+            );
+
+
+        card.className =
+            "job-card";
+
+
+        let originalButton =
+            "";
+
+
+        if (originalUrl) {
+
+            originalButton = `
+                <a
+                    href="${escapeHtml(originalUrl)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="original-button"
+                >
+                    View Original Job
+                </a>
+            `;
+
+        }
+
+
+        card.innerHTML = `
+
+            <div class="job-top">
+
+                <div class="job-info">
+
+                    <h3 class="job-title">
+                        ${escapeHtml(title)}
+                    </h3>
+
+                    <div class="company">
+                        ${escapeHtml(company)}
+                    </div>
+
+                    <div class="location">
+                        ${escapeHtml(location)}
+                    </div>
+
+                </div>
+
+
+                <div class="match-box">
+
+                    <div class="match-number">
+                        ${score}%
+                    </div>
+
+                    <div class="match-label">
+                        Match
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="progress-container">
+
+                <div class="progress-background">
+
+                    <div
+                        class="progress-bar"
+                        style="width:${Math.min(
+                            Math.max(score, 0),
+                            100
+                        )}%"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+            <div class="skills-section">
+
+                <div class="skills-title">
+                    Matching Skills
+                </div>
+
+                <div class="skills">
+
+                    ${createSkillBadges(
+                        matchedSkills,
+                        "match"
+                    )}
+
+                </div>
+
+            </div>
+
+
+            <div class="skills-section">
+
+                <div class="skills-title">
+                    Skills to Improve
+                </div>
+
+                <div class="skills">
+
+                    ${createSkillBadges(
+                        missingSkills,
+                        "missing"
+                    )}
+
+                </div>
+
+            </div>
+
+
+            <div class="job-actions">
+
+                <a
+                    href="job-match-details.html?job=${encodedJob}"
+                    class="view-button"
+                >
+                    View Job
+                </a>
+
+                ${originalButton}
+
+            </div>
+
+        `;
+
+
+        jobsContainer.appendChild(
+            card
+        );
+
+    }
+
+
+    /*
+     * RENDER JOBS
+     */
+
+    function renderJobs(jobs) {
+
+        jobsContainer.innerHTML =
+            "";
+
+        emptyState.style.display =
+            "none";
+
+
+        if (
+            !Array.isArray(jobs) ||
+            jobs.length === 0
+        ) {
+
+            resultsHeader.style.display =
+                "none";
+
+            emptyState.style.display =
+                "block";
+
+            return;
+
+        }
+
+
+        resultsHeader.style.display =
+            "flex";
+
+
+        jobCount.textContent =
+            `${jobs.length} matching jobs`;
+
+
+        jobs.forEach(
+            renderJob
+        );
+
+    }
+
+
+    /*
+     * EXTRACT JOB ARRAY
+     */
+
+    function extractJobs(data) {
+
+        if (!data) {
+
+            return [];
+
+        }
+
+
+        if (
+            Array.isArray(data)
+        ) {
+
+            return data;
+
+        }
+
+
+        if (
+            Array.isArray(
+                data.jobs
+            )
+        ) {
+
+            return data.jobs;
+
+        }
+
+
+        if (
+            Array.isArray(
+                data.matching_jobs
+            )
+        ) {
+
+            return data.matching_jobs;
+
+        }
+
+
+        if (
+            Array.isArray(
+                data.matches
+            )
+        ) {
+
+            return data.matches;
+
+        }
+
+
+        if (
+            Array.isArray(
+                data.job_matches
+            )
+        ) {
+
+            return data.job_matches;
+
+        }
+
+
+        return [];
+
+    }
+
+
+    /*
+     * FIND MATCHING JOBS
+     */
+
+    async function findMatchingJobs() {
+
+        const role =
+            roleInput.value.trim();
+
+        const location =
+            locationInput.value.trim();
+
+
+        if (!role) {
+
+            showStatus(
+                "Please enter a job role.",
+                "error"
+            );
+
+            roleInput.focus();
+
+            return;
+
+        }
+
+
+        if (!location) {
+
+            showStatus(
+                "Please enter a location.",
+                "error"
+            );
+
+            locationInput.focus();
+
+            return;
+
+        }
+
+
+        try {
+
+            setLoading(true);
+
+
+            jobsContainer.innerHTML =
+                "";
+
+            resultsHeader.style.display =
+                "none";
+
+            emptyState.style.display =
+                "none";
+
+
+            showStatus(
+                "Searching live jobs and comparing your resume skills...",
+                "loading"
+            );
+
+
+            /*
+             * Get logged-in user's
+             * Supabase access token.
+             */
+
+            const accessToken =
+                await getAccessToken();
+
+
+            /*
+             * Backend automatically uses
+             * latest resume analysis.
+             */
+
+            const response =
+                await fetch(
+                    `${API_BASE_URL}/api/jobs/match`,
+                    {
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json",
+
+                            "Authorization":
+                                `Bearer ${accessToken}`
+
+                        },
+
+                        body:
+                            JSON.stringify({
+
+                                role:
+                                    role,
+
+                                location:
+                                    location
+
+                            })
+
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            console.log(
+                "Job matching response:",
+                data
+            );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    data.error ||
+                    `Server returned ${response.status}`
+                );
+
+            }
+
+
+            if (
+                data.status ===
+                "error"
+            ) {
+
+                throw new Error(
+                    data.message ||
+                    "Job matching failed."
+                );
+
+            }
+
+
+            const jobs =
+                extractJobs(data);
+
+
+            /*
+             * Save latest result.
+             */
+
+            localStorage.setItem(
+                "latest_job_matches",
+                JSON.stringify(data)
+            );
+
+
+            localStorage.setItem(
+                "latest_job_match_role",
+                role
+            );
+
+
+            localStorage.setItem(
+                "latest_job_match_location",
+                location
+            );
+
+
+            renderJobs(
+                jobs
+            );
+
+
+            if (
+                jobs.length > 0
+            ) {
+
+                showStatus(
+                    `Found ${jobs.length} live jobs and calculated your skill matches.`,
+                    "success"
+                );
+
+            } else {
+
+                showStatus(
+                    "No matching jobs were found for this role and location.",
+                    "error"
+                );
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Job matching error:",
+                error
+            );
+
+
+            showStatus(
+                error.message ||
+                "Unable to find matching jobs.",
+                "error"
+            );
+
+
+            jobsContainer.innerHTML =
+                "";
+
+            resultsHeader.style.display =
+                "none";
+
+        } finally {
+
+            setLoading(
+                false
+            );
+
+        }
+
+    }
+
+
+    /*
+     * BUTTON
+     */
+
+    findJobsButton.addEventListener(
+        "click",
+        findMatchingJobs
+    );
+
+
+    /*
+     * ENTER KEY
+     */
+
+    roleInput.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                findMatchingJobs();
+
+            }
+
+        }
+    );
+
+
+    locationInput.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                findMatchingJobs();
+
+            }
+
+        }
+    );
+
+
+    /*
+     * LOAD LAST SEARCH
+     */
+
+    window.addEventListener(
+        "DOMContentLoaded",
+        () => {
+
+            const savedRole =
+                localStorage.getItem(
+                    "latest_job_match_role"
+                );
+
+
+            const savedLocation =
+                localStorage.getItem(
+                    "latest_job_match_location"
+                );
+
+
+            if (savedRole) {
+
+                roleInput.value =
+                    savedRole;
+
+            }
+
+
+            if (savedLocation) {
+
+                locationInput.value =
+                    savedLocation;
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
 </html>

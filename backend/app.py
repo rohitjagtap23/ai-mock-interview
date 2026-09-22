@@ -104,30 +104,71 @@ def require_user():
 
 def normalize_skill(skill):
 
+    if not skill:
+        return ""
+
     aliases = {
 
+        # Java / Spring
+        "java 8": "Java",
+        "java 11": "Java",
+        "java 17": "Java",
+        "java 21": "Java",
         "spring": "Spring Boot",
-
         "springboot": "Spring Boot",
+        "spring boot": "Spring Boot",
+        "spring framework": "Spring Boot",
 
+        # APIs
         "rest": "REST APIs",
-
         "rest api": "REST APIs",
+        "rest apis": "REST APIs",
+        "restful api": "REST APIs",
+        "restful apis": "REST APIs",
 
+        # Frontend
         "reactjs": "React",
-
+        "react.js": "React",
         "javascript": "JavaScript",
+        "js": "JavaScript",
 
-        "postgres": "PostgreSQL"
+        # Databases
+        "postgres": "PostgreSQL",
+        "postgresql": "PostgreSQL",
+        "mysql": "MySQL",
+
+        # Version control / DevOps
+        "gitlab": "Git",
+        "github": "GitHub",
+        "continuous integration": "CI/CD",
+        "continuous delivery": "CI/CD"
 
     }
 
-    key = skill.strip().lower()
+    key = str(skill).strip().lower()
 
     return aliases.get(
         key,
-        skill.strip()
+        str(skill).strip()
     )
+
+
+def skill_key(skill):
+    """Return a stable comparison key for skill matching."""
+
+    normalized = normalize_skill(skill)
+
+    return re.sub(
+        r"[^a-z0-9]+",
+        "",
+        normalized.lower()
+    )
+
+
+def skills_match(left, right):
+    """Compare two skills using normalized aliases."""
+
+    return skill_key(left) == skill_key(right)
 
 
 def extract_resume_skills(text):
@@ -135,16 +176,23 @@ def extract_resume_skills(text):
     if not text:
         return []
 
-    text_lower = text.lower()
+    text_lower = str(text).lower()
 
     skills = [
 
         "Java",
+        "Java 8",
+        "Java 11",
+        "Java 17",
+        "Java 21",
         "Spring Boot",
+        "Spring Framework",
         "Spring",
         "Spring Security",
         "Microservices",
         "REST APIs",
+        "REST API",
+        "RESTful APIs",
         "REST",
         "SQL",
         "MySQL",
@@ -156,6 +204,7 @@ def extract_resume_skills(text):
         "Kubernetes",
         "Git",
         "GitHub",
+        "GitLab",
         "Maven",
         "Gradle",
         "Jenkins",
@@ -167,6 +216,7 @@ def extract_resume_skills(text):
         "Redis",
         "React",
         "ReactJS",
+        "React.js",
         "Angular",
         "JavaScript",
         "TypeScript",
@@ -195,8 +245,11 @@ def extract_resume_skills(text):
 
     for skill in skills:
 
-        if skill.lower() in text_lower:
+        # Escape punctuation and use boundaries so that
+        # "Java" does not incorrectly match "JavaScript".
+        pattern = r"(?<![a-z0-9])" + re.escape(skill.lower()) + r"(?![a-z0-9])"
 
+        if re.search(pattern, text_lower):
             found.append(
                 normalize_skill(skill)
             )
@@ -204,7 +257,6 @@ def extract_resume_skills(text):
     return sorted(
         list(set(found))
     )
-
 
 def extract_keywords(text):
 
@@ -2000,13 +2052,65 @@ def match_jobs():
         ).strip()
 
 
+        # -------------------------------------------------
+        # Resume skills
+        # -------------------------------------------------
+        # The frontend normally sends the latest resume skills.
+        # If it does not, use the user's latest saved resume
+        # analysis so matching still works.
         resume_skills = [
-
             normalize_skill(skill)
-
             for skill in resume_skills
-
+            if str(skill).strip()
         ]
+
+        resume_skills = sorted(
+            list(
+                dict.fromkeys(
+                    resume_skills
+                )
+            )
+        )
+
+
+        if not resume_skills:
+
+            try:
+
+                latest_resume = (
+                    user_db
+                    .table("resume_analyses")
+                    .select("skills, created_at")
+                    .eq("user_id", user_id)
+                    .order("created_at", desc=True)
+                    .limit(1)
+                    .execute()
+                )
+
+                rows = latest_resume.data or []
+
+                if rows:
+
+                    resume_skills = [
+                        normalize_skill(skill)
+                        for skill in (rows[0].get("skills") or [])
+                        if str(skill).strip()
+                    ]
+
+                    resume_skills = sorted(
+                        list(
+                            dict.fromkeys(
+                                resume_skills
+                            )
+                        )
+                    )
+
+            except Exception as resume_error:
+
+                print(
+                    "Resume skill lookup warning:",
+                    resume_error
+                )
 
 
         if not role:
@@ -2022,6 +2126,22 @@ def match_jobs():
             }), 400
 
 
+        if not resume_skills:
+
+            return jsonify({
+
+                "status":
+                    "error",
+
+                "message":
+                    "No resume skills found. Analyze your resume first."
+
+            }), 400
+
+
+        # -------------------------------------------------
+        # Live Google Jobs search through SerpApi
+        # -------------------------------------------------
         results = serpapi_client.search({
 
             "engine":
@@ -2059,19 +2179,18 @@ def match_jobs():
             )
 
 
+            title = str(
+                job.get(
+                    "title",
+                    ""
+                )
+            )
+
+
             job_text = (
-
-                str(
-                    job.get(
-                        "title",
-                        ""
-                    )
-                )
+                title
                 + " "
-                + str(
-                    description
-                )
-
+                + str(description)
             )
 
 
@@ -2080,43 +2199,65 @@ def match_jobs():
             )
 
 
-            matched = [
+            # -------------------------------------------------
+            # Normalized skill comparison
+            # -------------------------------------------------
+            matched = []
 
-                skill
+            for resume_skill in resume_skills:
 
-                for skill in resume_skills
+                for job_skill in job_skills:
 
-                if normalize_skill(skill)
-                in job_skills
+                    if skills_match(
+                        resume_skill,
+                        job_skill
+                    ):
 
-            ]
+                        canonical = normalize_skill(
+                            job_skill
+                        )
 
+                        if canonical not in matched:
+                            matched.append(canonical)
 
-            missing = [
-
-                skill
-
-                for skill in job_skills
-
-                if skill
-                not in resume_skills
-
-            ]
+                        break
 
 
+            missing = []
+
+            for job_skill in job_skills:
+
+                if not any(
+                    skills_match(
+                        job_skill,
+                        resume_skill
+                    )
+                    for resume_skill in resume_skills
+                ):
+
+                    canonical = normalize_skill(
+                        job_skill
+                    )
+
+                    if canonical not in missing:
+                        missing.append(canonical)
+
+
+            # -------------------------------------------------
+            # Match score
+            # -------------------------------------------------
+            # Score is based on the skills detected in the
+            # individual job description.
             if job_skills:
 
                 match_score = round(
-
                     (
                         len(matched)
                         /
                         len(job_skills)
                     )
                     * 100,
-
                     1
-
                 )
 
             else:
@@ -2127,9 +2268,7 @@ def match_jobs():
             job_result = {
 
                 "title":
-                    job.get(
-                        "title"
-                    ),
+                    title,
 
                 "company":
                     job.get(
@@ -2163,18 +2302,56 @@ def match_jobs():
             )
 
 
+            # -------------------------------------------------
+            # Save match history
+            # -------------------------------------------------
             try:
 
                 match_row = {
-                    "user_id": user_id,
-                    "job_title": job_result.get("title"),
-                    "company": job_result.get("company"),
-                    "location": job_result.get("location"),
-                    "job_url": job_result.get("job_url"),
-                    "match_score": job_result.get("match_score", 0),
-                    "matched_skills": job_result.get("matched_skills", []),
-                    "missing_skills": job_result.get("missing_skills", [])
+
+                    "user_id":
+                        user_id,
+
+                    "job_title":
+                        job_result.get(
+                            "title"
+                        ),
+
+                    "company":
+                        job_result.get(
+                            "company"
+                        ),
+
+                    "location":
+                        job_result.get(
+                            "location"
+                        ),
+
+                    "job_url":
+                        job_result.get(
+                            "job_url"
+                        ),
+
+                    "match_score":
+                        job_result.get(
+                            "match_score",
+                            0
+                        ),
+
+                    "matched_skills":
+                        job_result.get(
+                            "matched_skills",
+                            []
+                        ),
+
+                    "missing_skills":
+                        job_result.get(
+                            "missing_skills",
+                            []
+                        )
+
                 }
+
 
                 (
                     user_db
@@ -2182,6 +2359,7 @@ def match_jobs():
                     .insert(match_row)
                     .execute()
                 )
+
 
             except Exception as db_error:
 
@@ -2202,6 +2380,9 @@ def match_jobs():
 
             "status":
                 "success",
+
+            "resume_skills":
+                resume_skills,
 
             "jobs":
                 matched_jobs
@@ -2225,6 +2406,7 @@ def match_jobs():
                 str(e)
 
         }), 500
+
 
 
 # =========================================================

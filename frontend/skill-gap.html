@@ -1,74 +1,3213 @@
 <!DOCTYPE html>
 <html lang="en">
- <head>
-  <title>
-   Skill Gap Analysis | AI Career Interviewer
-  </title>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <link href="style.css" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-  </script>
-  <script src="auth.js">
-  </script>
-  <script defer="" src="page.js">
-  </script>
- </head>
- <body data-page="skill-gap">
-  <aside class="sidebar">
-   <div class="sidebar-title">
-    AI Career
-    <br/>
-    Interviewer
-   </div>
-   <nav class="sidebar-nav">
-    <a data-page="index.html" href="index.html">
-     AI Interview
-    </a>
-    <a data-page="dashboard.html" href="dashboard.html">
-     Dashboard
-    </a>
-    <a data-page="career-intelligence.html" href="career-intelligence.html">
-     Market Intelligence
-    </a>
-    <a data-page="resume.html" href="resume.html">
-     Resume Analyzer
-    </a>
-    <a data-page="job-matching.html" href="job-matching.html">
-     Job Matching
-    </a>
-    <a data-page="skill-gap.html" href="skill-gap.html">
-     Skill Gap
-    </a>
-    <a data-page="roadmap.html" href="roadmap.html">
-     Learning Roadmap
-    </a>
-    <a data-page="progress.html" href="progress.html">
-     My Progress
-    </a>
-    <a data-page="interview-history.html" href="interview-history.html">
-     Interview History
-    </a>
-    <a data-page="profile.html" href="profile.html">
-     My Profile
-    </a>
-    <button class="logout-button" id="logoutButton" type="button">
-     Logout
-    </button>
-   </nav>
-  </aside>
-  <main class="main">
-   <h1>
-    Skill Gap Analysis
-   </h1>
-   <p class="muted">
-    Skills are ranked from your latest interview evaluations.
-   </p>
-   <section id="gapOut">
-   </section>
-   <a class="btn" href="roadmap.html">
-    Generate Learning Roadmap
-   </a>
-  </main>
- </body>
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Skill Gap Analysis | AI Career Interviewer</title>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Existing authentication configuration -->
+    <script src="auth.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family:
+                Inter,
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+
+        /* =========================
+           LAYOUT
+        ========================= */
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            width: 250px;
+            background: #111827;
+            color: white;
+            padding: 24px 16px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 21px;
+            font-weight: 800;
+            margin-bottom: 30px;
+            padding: 0 10px;
+        }
+
+        .logo span {
+            color: #60a5fa;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav a {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 11px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .nav a:hover {
+            background: #1f2937;
+            color: white;
+        }
+
+        .nav a.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .logout {
+            margin-top: 25px;
+            width: 100%;
+            border: 1px solid #374151;
+            background: transparent;
+            color: #cbd5e1;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .logout:hover {
+            background: #1f2937;
+            color: white;
+        }
+
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 32px;
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: 0 auto;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+        }
+
+        .page-header p {
+            margin: 0;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .role-badge {
+            display: inline-block;
+            margin-top: 14px;
+            padding: 7px 12px;
+            border-radius: 20px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+
+        /* =========================
+           UNIFIED ANALYSIS
+        ========================= */
+
+        .analysis-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 24px;
+            box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+        }
+
+        .analysis-card h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .analysis-description {
+            color: #64748b;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .signals {
+            display: grid;
+            grid-template-columns:
+                repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .signal {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 16px;
+            background: #fafafa;
+        }
+
+        .signal-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .signal-text {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+
+        /* =========================
+           SUMMARY CARDS
+        ========================= */
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+        }
+
+        .summary-label {
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .summary-value {
+            font-size: 30px;
+            font-weight: 800;
+        }
+
+        .summary-icon {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+
+        /* =========================
+           TWO COLUMN
+        ========================= */
+
+        .two-column {
+            display: grid;
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+
+        /* =========================
+           SECTION CARD
+        ========================= */
+
+        .section-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+        }
+
+        .section-card h2 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 20px;
+        }
+
+        .section-description {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+
+
+        /* =========================
+           SKILL TAGS
+        ========================= */
+
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .skill-tag {
+            padding: 7px 11px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .skill-tag.current {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .skill-tag.missing {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .empty-message {
+            color: #64748b;
+            font-size: 14px;
+            padding: 10px 0;
+        }
+
+
+        /* =========================
+           SKILL DETAILS
+        ========================= */
+
+        .details-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+        }
+
+        .details-card h2 {
+            margin-top: 0;
+        }
+
+        .details-description {
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .skill-row {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 12px;
+            background: #fff;
+        }
+
+        .skill-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .skill-row-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .skill-name {
+            font-size: 17px;
+            font-weight: 800;
+        }
+
+        .priority {
+            font-size: 12px;
+            font-weight: 800;
+            padding: 5px 9px;
+            border-radius: 20px;
+        }
+
+        .priority.high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .priority.medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .priority.low {
+            background: #e0f2fe;
+            color: #075985;
+        }
+
+        .skill-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .meta {
+            font-size: 13px;
+            color: #475569;
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 6px 8px;
+        }
+
+        .skill-status {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .status-good {
+            color: #15803d;
+            font-weight: 700;
+        }
+
+        .status-warning {
+            color: #b45309;
+            font-weight: 700;
+        }
+
+        .status-danger {
+            color: #dc2626;
+            font-weight: 700;
+        }
+
+
+        /* =========================
+           CTA
+        ========================= */
+
+        .cta {
+            background:
+                linear-gradient(
+                    135deg,
+                    #1d4ed8,
+                    #2563eb
+                );
+
+            color: white;
+            border-radius: 16px;
+            padding: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .cta h2 {
+            margin: 0 0 8px;
+        }
+
+        .cta p {
+            margin: 0;
+            color: #dbeafe;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: white;
+            color: #1d4ed8;
+            text-decoration: none;
+            font-weight: 800;
+            padding: 12px 18px;
+            border-radius: 9px;
+            white-space: nowrap;
+        }
+
+        .cta-button:hover {
+            background: #eff6ff;
+        }
+
+
+        /* =========================
+           LOADING / ERROR
+        ========================= */
+
+        .loading {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 35px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (
+            max-width: 1000px
+        ) {
+
+            .summary-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .signals {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .two-column {
+                grid-template-columns:
+                    1fr;
+            }
+
+        }
+
+
+        @media (
+            max-width: 700px
+        ) {
+
+            .sidebar {
+                width: 210px;
+            }
+
+            .main {
+                margin-left: 210px;
+                width: calc(100% - 210px);
+                padding: 18px;
+            }
+
+            .summary-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .cta {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+    <!-- =========================
+         SIDEBAR
+    ========================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            AI <span>Career</span> Interviewer
+        </div>
+
+
+        <nav class="nav">
+
+            <a href="dashboard.html">
+                Dashboard
+            </a>
+
+            <a href="career-intelligence.html">
+                Career Intelligence
+            </a>
+
+            <a href="resume.html">
+                Resume Analyzer
+            </a>
+
+            <a href="job-matching.html">
+                Job Matching
+            </a>
+
+            <a
+                href="skill-gap.html"
+                class="active"
+            >
+                Skill Gap
+            </a>
+
+            <a href="roadmap.html">
+                Learning Roadmap
+            </a>
+
+            <a href="learning-resources.html">
+                Learning Resources
+            </a>
+
+            <a href="progress.html">
+                My Progress
+            </a>
+
+            <a href="interview-history.html">
+                Interview History
+            </a>
+
+            <a href="profile.html">
+                Profile
+            </a>
+
+        </nav>
+
+
+        <button
+            class="logout"
+            id="logoutButton"
+        >
+            Logout
+        </button>
+
+    </aside>
+
+
+
+    <!-- =========================
+         MAIN
+    ========================= -->
+
+    <main class="main">
+
+        <div class="container">
+
+
+            <!-- HEADER -->
+
+            <div class="page-header">
+
+                <h1>
+                    Skill Gap Analysis
+                </h1>
+
+                <p>
+                    Compare your resume skills and interview
+                    performance with skills currently required
+                    by live job listings.
+                </p>
+
+                <div
+                    class="role-badge"
+                    id="roleBadge"
+                >
+                    Loading role...
+                </div>
+
+            </div>
+
+
+
+            <!-- ERROR -->
+
+            <div
+                class="error"
+                id="errorBox"
+            ></div>
+
+
+
+            <!-- LOADING -->
+
+            <div
+                class="loading"
+                id="loading"
+            >
+                Analyzing your career profile...
+            </div>
+
+
+
+            <!-- CONTENT -->
+
+            <div
+                id="content"
+                style="display:none;"
+            >
+
+
+                <!-- =========================
+                     UNIFIED CAREER ANALYSIS
+                ========================= -->
+
+                <section class="analysis-card">
+
+                    <h2>
+                        🧠 Unified Career Analysis
+                    </h2>
+
+                    <div class="analysis-description">
+
+                        This analysis combines three signals
+                        to identify the skills you should
+                        develop for your target role.
+
+                    </div>
+
+
+                    <div class="signals">
+
+                        <div class="signal">
+
+                            <div class="signal-title">
+                                📄 Resume
+                            </div>
+
+                            <div class="signal-text">
+                                Skills you already list
+                                on your resume.
+                            </div>
+
+                        </div>
+
+
+                        <div class="signal">
+
+                            <div class="signal-title">
+                                🎤 Interview
+                            </div>
+
+                            <div class="signal-text">
+                                Skills tested and evaluated
+                                during AI interviews.
+                            </div>
+
+                        </div>
+
+
+                        <div class="signal">
+
+                            <div class="signal-title">
+                                💼 Live Jobs
+                            </div>
+
+                            <div class="signal-text">
+                                Skills employers currently
+                                request in analyzed listings.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =========================
+                     SUMMARY
+                ========================= -->
+
+                <section class="summary-grid">
+
+
+                    <div class="summary-card">
+
+                        <div class="summary-icon">
+                            ✓
+                        </div>
+
+                        <div class="summary-label">
+                            Profile Skills
+                        </div>
+
+                        <div
+                            class="summary-value"
+                            id="profileSkillCount"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-card">
+
+                        <div class="summary-icon">
+                            ⚠
+                        </div>
+
+                        <div class="summary-label">
+                            Skills to Improve
+                        </div>
+
+                        <div
+                            class="summary-value"
+                            id="improveSkillCount"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-card">
+
+                        <div class="summary-icon">
+                            📊
+                        </div>
+
+                        <div class="summary-label">
+                            Market Coverage
+                        </div>
+
+                        <div
+                            class="summary-value"
+                            id="coverageValue"
+                        >
+                            0%
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-card">
+
+                        <div class="summary-icon">
+                            💼
+                        </div>
+
+                        <div class="summary-label">
+                            Jobs Analyzed
+                        </div>
+
+                        <div
+                            class="summary-value"
+                            id="jobsAnalyzed"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                </section>
+
+
+
+                <!-- =========================
+                     CURRENT + MISSING SKILLS
+                ========================= -->
+
+                <section class="two-column">
+
+
+                    <!-- CURRENT SKILLS -->
+
+                    <div class="section-card">
+
+                        <h2>
+                            ✓ Skills on Your Profile
+                        </h2>
+
+                        <div class="section-description">
+
+                            Skills currently identified
+                            in your resume/profile.
+                            Interview performance is shown
+                            separately below.
+
+                        </div>
+
+
+                        <div
+                            class="skill-tags"
+                            id="currentSkills"
+                        ></div>
+
+                    </div>
+
+
+
+                    <!-- MISSING -->
+
+                    <div class="section-card">
+
+                        <h2>
+                            ⚠ Skills to Improve
+                        </h2>
+
+                        <div class="section-description">
+
+                            Skills that need development
+                            based on interview performance
+                            and current market demand.
+
+                        </div>
+
+
+                        <div
+                            class="skill-tags"
+                            id="missingSkills"
+                        ></div>
+
+                    </div>
+
+
+                </section>
+
+
+
+                <!-- =========================
+                     DETAILS
+                ========================= -->
+
+                <section class="details-card">
+
+                    <h2>
+                        Skill Gap Details
+                    </h2>
+
+                    <div class="details-description">
+
+                        Each skill is evaluated using
+                        interview performance and the
+                        number of analyzed jobs requiring
+                        that skill.
+
+                    </div>
+
+
+                    <div id="skillDetails"></div>
+
+                </section>
+
+
+
+                <!-- =========================
+                     ROADMAP CTA
+                ========================= -->
+
+                <section class="cta">
+
+                    <div>
+
+                        <h2>
+                            Ready to close your skill gaps?
+                        </h2>
+
+                        <p>
+                            Generate an AI learning roadmap
+                            based on your highest-priority
+                            development areas.
+                        </p>
+
+                    </div>
+
+
+                    <a
+                        href="roadmap.html"
+                        class="cta-button"
+                    >
+                        Generate My Learning Roadmap →
+                    </a>
+
+                </section>
+
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+
+<script>
+
+    /* =====================================================
+       CONFIGURATION
+    ===================================================== */
+
+    const API_URL =
+        "http://127.0.0.1:5000";
+
+
+    /* =====================================================
+       NORMALIZE SKILLS
+    ===================================================== */
+
+    function normalizeSkill(skill) {
+
+        if (!skill) {
+            return "";
+        }
+
+
+        let value =
+            String(skill)
+                .trim()
+                .replace(/\s+/g, " ");
+
+
+        const lower =
+            value.toLowerCase();
+
+
+        const aliases = {
+
+            "java 8":
+                "Java",
+
+            "java 11":
+                "Java",
+
+            "java 17":
+                "Java",
+
+            "java 21":
+                "Java",
+
+            "spring":
+                "Spring Boot",
+
+            "spring framework":
+                "Spring Boot",
+
+            "springboot":
+                "Spring Boot",
+
+            "rest":
+                "REST APIs",
+
+            "rest api":
+                "REST APIs",
+
+            "rest apis":
+                "REST APIs",
+
+            "restful api":
+                "REST APIs",
+
+            "restful apis":
+                "REST APIs",
+
+            "reactjs":
+                "React",
+
+            "react.js":
+                "React",
+
+            "postgres":
+                "PostgreSQL",
+
+            "postgresql":
+                "PostgreSQL",
+
+            "gitlab":
+                "Git",
+
+            "continuous integration":
+                "CI/CD",
+
+            "continuous delivery":
+                "CI/CD",
+
+            "continuous integration/delivery":
+                "CI/CD"
+
+        };
+
+
+        if (aliases[lower]) {
+            return aliases[lower];
+        }
+
+
+        return value;
+    }
+
+
+
+    /* =====================================================
+       SKILL KEY
+    ===================================================== */
+
+    function skillKey(skill) {
+
+        return normalizeSkill(skill)
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "");
+
+    }
+
+
+
+    /* =====================================================
+       SAFE LOCAL STORAGE
+    ===================================================== */
+
+    function readLocalStorageJson(key) {
+
+        try {
+
+            const value =
+                localStorage.getItem(key);
+
+            if (!value) {
+                return null;
+            }
+
+            return JSON.parse(value);
+
+        } catch (error) {
+
+            console.warn(
+                "Could not parse localStorage:",
+                key,
+                error
+            );
+
+            return null;
+        }
+
+    }
+
+
+
+    /* =====================================================
+       GET ROLE
+    ===================================================== */
+
+    function getRole() {
+
+        const possibleKeys = [
+
+            "target_role",
+            "targetRole",
+            "role",
+            "selectedRole"
+
+        ];
+
+
+        for (
+            const key of possibleKeys
+        ) {
+
+            const value =
+                localStorage.getItem(key);
+
+            if (
+                value &&
+                value.trim()
+            ) {
+
+                return value.trim();
+
+            }
+
+        }
+
+
+        const profile =
+            readLocalStorageJson(
+                "user_profile"
+            );
+
+
+        if (
+            profile &&
+            profile.target_role
+        ) {
+
+            return profile.target_role;
+
+        }
+
+
+        return "Java Developer";
+
+    }
+
+
+
+    /* =====================================================
+       GET SESSION
+    ===================================================== */
+
+    async function getSession() {
+
+        try {
+
+            if (
+                typeof supabaseClient ===
+                "undefined"
+            ) {
+
+                console.warn(
+                    "supabaseClient not found."
+                );
+
+                return null;
+
+            }
+
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .auth
+                    .getSession();
+
+
+            if (error) {
+
+                console.error(
+                    "Session error:",
+                    error
+                );
+
+                return null;
+
+            }
+
+
+            return data.session || null;
+
+        } catch (error) {
+
+            console.error(
+                "Session exception:",
+                error
+            );
+
+            return null;
+
+        }
+
+    }
+
+
+
+    /* =====================================================
+       RESUME SKILLS
+    ===================================================== */
+
+    function getResumeSkills() {
+
+        const possibleKeys = [
+
+            "resume_skills",
+            "latest_resume_skills",
+            "detected_resume_skills",
+            "latest_resume_analysis",
+            "resume_analysis"
+
+        ];
+
+
+        const skills =
+            new Map();
+
+
+        for (
+            const key of possibleKeys
+        ) {
+
+            const data =
+                readLocalStorageJson(key);
+
+
+            if (!data) {
+                continue;
+            }
+
+
+            let values = [];
+
+
+            if (
+                Array.isArray(data)
+            ) {
+
+                values = data;
+
+            } else if (
+                Array.isArray(data.skills)
+            ) {
+
+                values = data.skills;
+
+            } else if (
+                Array.isArray(data.resume_skills)
+            ) {
+
+                values =
+                    data.resume_skills;
+
+            } else if (
+                data.data &&
+                Array.isArray(data.data.skills)
+            ) {
+
+                values =
+                    data.data.skills;
+
+            }
+
+
+            values.forEach(
+                skill => {
+
+                    const normalized =
+                        normalizeSkill(
+                            skill
+                        );
+
+
+                    if (normalized) {
+
+                        skills.set(
+                            skillKey(
+                                normalized
+                            ),
+                            normalized
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /*
+            If the unified skill-gap object already exists,
+            use its current_skills as another source.
+        */
+
+        const existing =
+            readLocalStorageJson(
+                "latest_skill_gap"
+            );
+
+
+        if (
+            existing &&
+            !Array.isArray(existing) &&
+            Array.isArray(
+                existing.current_skills
+            )
+        ) {
+
+            existing.current_skills.forEach(
+                skill => {
+
+                    const normalized =
+                        normalizeSkill(
+                            skill
+                        );
+
+
+                    if (normalized) {
+
+                        skills.set(
+                            skillKey(
+                                normalized
+                            ),
+                            normalized
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        return [
+            ...skills.values()
+        ];
+
+    }
+
+
+
+    /* =====================================================
+       INTERVIEW PROFILE
+    ===================================================== */
+
+    function getStoredInterviewProfile() {
+
+        const profile =
+            new Map();
+
+
+        const possibleKeys = [
+
+            "latest_skill_gap",
+            "latest_interview_profile",
+            "skill_profile",
+            "interview_skill_profile"
+
+        ];
+
+
+        for (
+            const key of possibleKeys
+        ) {
+
+            const data =
+                readLocalStorageJson(key);
+
+
+            if (!data) {
+                continue;
+            }
+
+
+            let values = [];
+
+
+            /*
+                New unified object format.
+            */
+
+            if (
+                !Array.isArray(data) &&
+                Array.isArray(
+                    data.skill_gaps
+                )
+            ) {
+
+                values =
+                    data.skill_gaps;
+
+            }
+
+
+            /*
+                Old array format.
+            */
+
+            else if (
+                Array.isArray(data)
+            ) {
+
+                values = data;
+
+            }
+
+
+            values.forEach(
+                item => {
+
+                    if (
+                        typeof item ===
+                        "string"
+                    ) {
+
+                        const skill =
+                            normalizeSkill(
+                                item
+                            );
+
+
+                        if (skill) {
+
+                            profile.set(
+                                skillKey(skill),
+                                {
+                                    skill,
+                                    score: null
+                                }
+                            );
+
+                        }
+
+                        return;
+
+                    }
+
+
+                    if (
+                        item &&
+                        item.skill
+                    ) {
+
+                        const skill =
+                            normalizeSkill(
+                                item.skill
+                            );
+
+
+                        if (!skill) {
+                            return;
+                        }
+
+
+                        let score = null;
+
+
+                        if (
+                            typeof item.average_score ===
+                            "number"
+                        ) {
+
+                            score =
+                                item.average_score;
+
+                        } else if (
+                            typeof item.score ===
+                            "number"
+                        ) {
+
+                            score =
+                                item.score;
+
+                        }
+
+
+                        profile.set(
+                            skillKey(skill),
+                            {
+                                skill,
+                                score
+                            }
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        return profile;
+
+    }
+
+
+
+    /* =====================================================
+       GET JOB DATA
+    ===================================================== */
+
+    function getJobData() {
+
+        const possibleKeys = [
+
+            "latest_job_matches",
+            "job_matches",
+            "latest_jobs",
+            "career_intelligence"
+
+        ];
+
+
+        for (
+            const key of possibleKeys
+        ) {
+
+            const data =
+                readLocalStorageJson(key);
+
+
+            if (!data) {
+                continue;
+            }
+
+
+            /*
+                Direct array.
+            */
+
+            if (
+                Array.isArray(data)
+            ) {
+
+                return {
+                    jobs: data
+                };
+
+            }
+
+
+            /*
+                Object containing jobs.
+            */
+
+            if (
+                Array.isArray(data.jobs)
+            ) {
+
+                return {
+                    jobs: data.jobs
+                };
+
+            }
+
+
+            /*
+                Some responses may use results.
+            */
+
+            if (
+                Array.isArray(data.results)
+            ) {
+
+                return {
+                    jobs: data.results
+                };
+
+            }
+
+
+            /*
+                Career intelligence may store
+                live_jobs as a number.
+            */
+
+            if (
+                typeof data.live_jobs ===
+                "number"
+            ) {
+
+                return {
+                    jobs: [],
+                    live_jobs:
+                        data.live_jobs
+                };
+
+            }
+
+        }
+
+
+        return {
+            jobs: []
+        };
+
+    }
+
+
+
+    /* =====================================================
+       EXTRACT JOB SKILLS
+    ===================================================== */
+
+    function extractJobSkills(job) {
+
+        const result = [];
+
+
+        /*
+            Job matching can contain skills in
+            different fields.
+
+            matching_skills:
+            Skills already present in profile.
+
+            matched_skills:
+            Another possible name for matches.
+
+            required_skills / skills / job_skills:
+            Skills required by the listing.
+
+            missing_skills:
+            Skills required but absent from profile.
+        */
+
+        const possibleFields = [
+
+            job.matching_skills,
+
+            job.matched_skills,
+
+            job.required_skills,
+
+            job.skills,
+
+            job.job_skills,
+
+            job.missing_skills
+
+        ];
+
+
+        possibleFields.forEach(
+            field => {
+
+                if (
+                    Array.isArray(field)
+                ) {
+
+                    field.forEach(
+                        skill => {
+
+                            if (
+                                typeof skill ===
+                                "string"
+                            ) {
+
+                                const normalized =
+                                    normalizeSkill(
+                                        skill
+                                    );
+
+
+                                if (
+                                    normalized
+                                ) {
+
+                                    result.push(
+                                        normalized
+                                    );
+
+                                }
+
+                            }
+
+                        }
+                    );
+
+                }
+
+            }
+        );
+
+
+        return [
+            ...new Map(
+                result.map(
+                    skill => [
+                        skillKey(skill),
+                        skill
+                    ]
+                )
+            ).values()
+        ];
+
+    }
+
+
+
+    /* =====================================================
+       BUILD UNIFIED PROFILE
+    ===================================================== */
+
+    function buildUnifiedProfile(
+        resumeSkills,
+        interviewProfile,
+        jobData
+    ) {
+
+        const currentMap =
+            new Map();
+
+
+        const marketMap =
+            new Map();
+
+
+        const interviewMap =
+            interviewProfile;
+
+
+        /*
+            -----------------------------------------
+            1. Resume skills
+            -----------------------------------------
+        */
+
+        resumeSkills.forEach(
+            skill => {
+
+                const normalized =
+                    normalizeSkill(
+                        skill
+                    );
+
+
+                if (!normalized) {
+                    return;
+                }
+
+
+                currentMap.set(
+                    skillKey(normalized),
+                    normalized
+                );
+
+            }
+        );
+
+
+        /*
+            -----------------------------------------
+            2. Interview skills
+            -----------------------------------------
+        */
+
+        interviewProfile.forEach(
+            (item, key) => {
+
+                if (
+                    item &&
+                    item.skill
+                ) {
+
+                    currentMap.set(
+                        key,
+                        item.skill
+                    );
+
+                }
+
+            }
+        );
+
+
+        /*
+            -----------------------------------------
+            3. Analyze jobs
+            -----------------------------------------
+        */
+
+        const jobs =
+            Array.isArray(jobData.jobs)
+                ? jobData.jobs
+                : [];
+
+
+        jobs.forEach(
+            job => {
+
+                const jobSkills =
+                    extractJobSkills(
+                        job
+                    );
+
+
+                jobSkills.forEach(
+                    skill => {
+
+                        marketMap.set(
+                            skillKey(skill),
+                            {
+                                skill,
+                                jobCount:
+                                    (
+                                        marketMap.get(
+                                            skillKey(skill)
+                                        )?.jobCount ||
+                                        0
+                                    ) + 1
+                            }
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+        /*
+            -----------------------------------------
+            4. Calculate gaps
+            -----------------------------------------
+        */
+
+        const gaps = [];
+
+
+        marketMap.forEach(
+            market => {
+
+                const key =
+                    skillKey(
+                        market.skill
+                    );
+
+
+                const resumeHas =
+                    resumeSkills.some(
+                        skill =>
+                            skillKey(skill) ===
+                            key
+                    );
+
+
+                const interview =
+                    interviewMap.get(
+                        key
+                    );
+
+
+                const score =
+                    interview &&
+                    typeof interview.score ===
+                    "number"
+                        ? interview.score
+                        : null;
+
+
+                /*
+                    Skill needs improvement when:
+
+                    A. It is missing from resume
+
+                    OR
+
+                    B. It exists on resume but
+                       interview performance is < 5
+                */
+
+                const needsImprovement =
+                    !resumeHas ||
+                    (
+                        score !== null &&
+                        score < 5
+                    );
+
+
+                if (
+                    needsImprovement
+                ) {
+
+                    gaps.push({
+
+                        skill:
+                            market.skill,
+
+                        job_count:
+                            market.jobCount,
+
+                        job_percentage:
+                            jobs.length > 0
+                                ? Math.round(
+                                    (
+                                        market.jobCount /
+                                        jobs.length
+                                    ) * 100
+                                )
+                                : 0,
+
+                        average_score:
+                            score,
+
+                        resume_present:
+                            resumeHas,
+
+                        interview_evaluated:
+                            score !== null
+
+                    });
+
+                }
+
+            }
+        );
+
+
+        /*
+            -----------------------------------------
+            5. Interview weaknesses
+               that may not have appeared in jobs
+            -----------------------------------------
+        */
+
+        interviewProfile.forEach(
+            item => {
+
+                if (
+                    !item ||
+                    !item.skill
+                ) {
+
+                    return;
+
+                }
+
+
+                const score =
+                    item.score;
+
+
+                if (
+                    score === null ||
+                    typeof score !==
+                    "number"
+                ) {
+
+                    return;
+
+                }
+
+
+                if (
+                    score >= 5
+                ) {
+
+                    return;
+
+                }
+
+
+                const key =
+                    skillKey(
+                        item.skill
+                    );
+
+
+                const alreadyExists =
+                    gaps.some(
+                        gap =>
+                            skillKey(
+                                gap.skill
+                            ) === key
+                    );
+
+
+                if (
+                    alreadyExists
+                ) {
+
+                    return;
+
+                }
+
+
+                const resumeHas =
+                    resumeSkills.some(
+                        skill =>
+                            skillKey(skill) ===
+                            key
+                    );
+
+
+                gaps.push({
+
+                    skill:
+                        item.skill,
+
+                    job_count:
+                        0,
+
+                    job_percentage:
+                        0,
+
+                    average_score:
+                        score,
+
+                    resume_present:
+                        resumeHas,
+
+                    interview_evaluated:
+                        true
+
+                });
+
+            }
+        );
+
+
+        /*
+            -----------------------------------------
+            6. MARKET COVERAGE
+            -----------------------------------------
+
+            A market skill is considered covered when:
+
+            - It exists on the resume/profile
+            - AND if it has been interviewed,
+              interview score is >= 5/10
+
+            If it has not been evaluated in an
+            interview, resume presence is enough.
+        */
+
+        const marketSkills =
+            [...marketMap.values()];
+
+
+        const totalMarketSkills =
+            marketSkills.length;
+
+
+        let coveredMarketSkills =
+            0;
+
+
+        marketSkills.forEach(
+            market => {
+
+                const key =
+                    skillKey(
+                        market.skill
+                    );
+
+
+                const resumeHas =
+                    resumeSkills.some(
+                        skill =>
+                            skillKey(skill) ===
+                            key
+                    );
+
+
+                const interview =
+                    interviewMap.get(
+                        key
+                    );
+
+
+                /*
+                    Resume has skill and no
+                    interview evaluation.
+                */
+
+                if (
+                    resumeHas &&
+                    !interview
+                ) {
+
+                    coveredMarketSkills++;
+
+                    return;
+
+                }
+
+
+                /*
+                    Resume has skill and interview
+                    score is strong enough.
+                */
+
+                if (
+                    resumeHas &&
+                    interview &&
+                    typeof interview.score ===
+                    "number" &&
+                    interview.score >= 5
+                ) {
+
+                    coveredMarketSkills++;
+
+                }
+
+            }
+        );
+
+
+        const coverage =
+            totalMarketSkills > 0
+                ? Math.round(
+                    (
+                        coveredMarketSkills /
+                        totalMarketSkills
+                    ) * 100
+                )
+                : 0;
+
+
+        /*
+            -----------------------------------------
+            7. Sort gaps
+            -----------------------------------------
+        */
+
+        gaps.sort(
+            (a, b) => {
+
+                /*
+                    First prioritize job demand.
+                */
+
+                if (
+                    b.job_percentage !==
+                    a.job_percentage
+                ) {
+
+                    return (
+                        b.job_percentage -
+                        a.job_percentage
+                    );
+
+                }
+
+
+                /*
+                    Then weak interview score.
+                */
+
+                const aScore =
+                    a.average_score === null
+                        ? 10
+                        : a.average_score;
+
+
+                const bScore =
+                    b.average_score === null
+                        ? 10
+                        : b.average_score;
+
+
+                return (
+                    aScore -
+                    bScore
+                );
+
+            }
+        );
+
+
+        /*
+            -----------------------------------------
+            8. All current skills
+            -----------------------------------------
+        */
+
+        const currentSkills =
+            [...currentMap.values()]
+                .sort(
+                    (a, b) =>
+                        a.localeCompare(b)
+                );
+
+
+        /*
+            -----------------------------------------
+            9. Missing / improvement skills
+            -----------------------------------------
+        */
+
+        const missingSkills =
+            gaps.map(
+                gap =>
+                    gap.skill
+            );
+
+
+        return {
+
+            currentSkills,
+
+            missingSkills,
+
+            gaps,
+
+            marketSkills,
+
+            coverage,
+
+            coveredMarketSkills,
+
+            totalMarketSkills,
+
+            jobsAnalyzed:
+                jobs.length ||
+                jobData.live_jobs ||
+                0
+
+        };
+
+    }
+
+
+
+    /* =====================================================
+       RENDER TAGS
+    ===================================================== */
+
+    function renderTags(
+        elementId,
+        skills,
+        className
+    ) {
+
+        const element =
+            document.getElementById(
+                elementId
+            );
+
+
+        element.innerHTML = "";
+
+
+        if (
+            !skills ||
+            skills.length === 0
+        ) {
+
+            element.innerHTML = `
+                <div class="empty-message">
+                    No skills available yet.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        skills.forEach(
+            skill => {
+
+                const tag =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                tag.className =
+                    `skill-tag ${className}`;
+
+
+                tag.textContent =
+                    skill;
+
+
+                element.appendChild(
+                    tag
+                );
+
+            }
+        );
+
+    }
+
+
+
+    /* =====================================================
+       GET PRIORITY
+    ===================================================== */
+
+    function getPriority(
+        jobPercentage,
+        score
+    ) {
+
+        /*
+            High:
+
+            >= 50% job demand
+            OR interview score below 3
+        */
+
+        if (
+            jobPercentage >= 50 ||
+            (
+                score !== null &&
+                score < 3
+            )
+        ) {
+
+            return "High";
+
+        }
+
+
+        /*
+            Medium:
+
+            >= 30% demand
+            OR interview score below 5
+        */
+
+        if (
+            jobPercentage >= 30 ||
+            (
+                score !== null &&
+                score < 5
+            )
+        ) {
+
+            return "Medium";
+
+        }
+
+
+        return "Low";
+
+    }
+
+
+
+    /* =====================================================
+       RENDER DETAILS
+    ===================================================== */
+
+    function renderDetails(
+        gaps,
+        totalJobs
+    ) {
+
+        const container =
+            document.getElementById(
+                "skillDetails"
+            );
+
+
+        container.innerHTML = "";
+
+
+        if (
+            !gaps ||
+            gaps.length === 0
+        ) {
+
+            container.innerHTML = `
+                <div class="empty-message">
+                    No significant skill gaps detected.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        gaps.forEach(
+            gap => {
+
+                const priority =
+                    getPriority(
+                        gap.job_percentage,
+                        gap.average_score
+                    );
+
+
+                const priorityClass =
+                    priority.toLowerCase();
+
+
+                const row =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                row.className =
+                    "skill-row";
+
+
+                /*
+                    Interview text
+                */
+
+                let interviewText = "";
+
+
+                if (
+                    gap.average_score === null ||
+                    gap.average_score === undefined
+                ) {
+
+                    interviewText =
+                        "Interview not yet evaluated";
+
+                } else {
+
+                    interviewText =
+                        `Interview: ${
+                            Number(
+                                gap.average_score
+                            ).toFixed(1)
+                        }/10`;
+
+                }
+
+
+                /*
+                    Job demand text
+                */
+
+                let jobText =
+                    "No direct job demand detected";
+
+
+                if (
+                    gap.job_count > 0 &&
+                    totalJobs > 0
+                ) {
+
+                    jobText =
+                        `Required by ${
+                            gap.job_count
+                        } of ${
+                            totalJobs
+                        } analyzed jobs · ${
+                            gap.job_percentage
+                        }%`;
+
+                }
+
+
+                /*
+                    Resume status
+                */
+
+                const resumeText =
+                    gap.resume_present
+                        ? `
+                            <span class="status-good">
+                                ✓ Listed on resume
+                            </span>
+                        `
+                        : `
+                            <span class="status-danger">
+                                ⚠ Not found on resume
+                            </span>
+                        `;
+
+
+                /*
+                    Interview status
+                */
+
+                let interviewStatus = "";
+
+
+                if (
+                    gap.average_score === null ||
+                    gap.average_score === undefined
+                ) {
+
+                    interviewStatus = `
+                        <span class="status-warning">
+                            Interview not yet evaluated
+                        </span>
+                    `;
+
+                } else if (
+                    gap.average_score < 5
+                ) {
+
+                    interviewStatus = `
+                        <span class="status-danger">
+                            ⚠ Interview performance
+                            needs improvement
+                        </span>
+                    `;
+
+                } else {
+
+                    interviewStatus = `
+                        <span class="status-good">
+                            ✓ Interview performance
+                            acceptable
+                        </span>
+                    `;
+
+                }
+
+
+                /*
+                    Explanation
+                */
+
+                let explanation = "";
+
+
+                if (
+                    gap.average_score !== null &&
+                    gap.average_score < 5
+                ) {
+
+                    explanation = `
+                        <div style="
+                            margin-top:8px;
+                            color:#64748b;
+                        ">
+                            Your interview score for this
+                            skill was below 5/10. Practice
+                            this skill before your next
+                            interview.
+                        </div>
+                    `;
+
+                } else if (
+                    !gap.resume_present &&
+                    gap.job_count > 0
+                ) {
+
+                    explanation = `
+                        <div style="
+                            margin-top:8px;
+                            color:#64748b;
+                        ">
+                            This skill appears in current
+                            job listings but is not currently
+                            listed on your resume.
+                        </div>
+                    `;
+
+                }
+
+
+                row.innerHTML = `
+
+                    <div class="skill-row-header">
+
+                        <div class="skill-name">
+                            ${escapeHtml(
+                                gap.skill
+                            )}
+                        </div>
+
+                        <div
+                            class="priority ${priorityClass}"
+                        >
+                            ${priority} Priority
+                        </div>
+
+                    </div>
+
+
+                    <div class="skill-meta">
+
+                        <div class="meta">
+                            ${escapeHtml(
+                                interviewText
+                            )}
+                        </div>
+
+                        <div class="meta">
+                            ${escapeHtml(
+                                jobText
+                            )}
+                        </div>
+
+                    </div>
+
+
+                    <div class="skill-status">
+
+                        ${resumeText}
+
+                        &nbsp;&nbsp;
+
+                        ${interviewStatus}
+
+                        ${explanation}
+
+                    </div>
+
+                `;
+
+
+                container.appendChild(
+                    row
+                );
+
+            }
+        );
+
+    }
+
+
+
+    /* =====================================================
+       ESCAPE HTML
+    ===================================================== */
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+    }
+
+
+
+    /* =====================================================
+       SAVE UNIFIED DATA
+    ===================================================== */
+
+    function saveUnifiedData(
+        profile,
+        role
+    ) {
+
+        const data = {
+
+            role,
+
+            current_skills:
+                profile.currentSkills,
+
+            missing_skills:
+                profile.missingSkills,
+
+            matched_skills:
+                profile.marketSkills
+                    .filter(
+                        market => {
+
+                            const current =
+                                profile.currentSkills
+                                    .some(
+                                        skill =>
+                                            skillKey(skill) ===
+                                            skillKey(
+                                                market.skill
+                                            )
+                                    );
+
+                            return current;
+
+                        }
+                    )
+                    .map(
+                        market =>
+                            market.skill
+                    ),
+
+            jobs_analyzed:
+                profile.jobsAnalyzed,
+
+            coverage:
+                profile.coverage,
+
+            covered_market_skills:
+                profile.coveredMarketSkills,
+
+            total_market_skills:
+                profile.totalMarketSkills,
+
+            skill_gaps:
+                profile.gaps,
+
+            updated_at:
+                new Date().toISOString()
+
+        };
+
+
+        localStorage.setItem(
+            "latest_skill_gap",
+            JSON.stringify(data)
+        );
+
+
+        /*
+            Additional compatibility key.
+            Some older roadmap/integration code
+            expects an array.
+        */
+
+        localStorage.setItem(
+            "latest_skill_gap_array",
+            JSON.stringify(
+                profile.gaps
+            )
+        );
+
+
+        return data;
+
+    }
+
+
+
+    /* =====================================================
+       DASHBOARD API
+    ===================================================== */
+
+    async function getDashboardData(
+        session
+    ) {
+
+        if (!session) {
+            return null;
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/api/dashboard`,
+                    {
+
+                        method: "GET",
+
+                        headers: {
+
+                            "Authorization":
+                                `Bearer ${
+                                    session.access_token
+                                }`,
+
+                            "Content-Type":
+                                "application/json"
+
+                        }
+
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                console.warn(
+                    "Dashboard API status:",
+                    response.status
+                );
+
+                return null;
+
+            }
+
+
+            return await response.json();
+
+        } catch (error) {
+
+            console.warn(
+                "Dashboard API failed:",
+                error
+            );
+
+            return null;
+
+        }
+
+    }
+
+
+
+    /* =====================================================
+       LOAD SKILL GAP
+    ===================================================== */
+
+    async function loadSkillGap() {
+
+        const loading =
+            document.getElementById(
+                "loading"
+            );
+
+
+        const content =
+            document.getElementById(
+                "content"
+            );
+
+
+        const errorBox =
+            document.getElementById(
+                "errorBox"
+            );
+
+
+        try {
+
+            const role =
+                getRole();
+
+
+            document.getElementById(
+                "roleBadge"
+            ).textContent =
+                `Target Role: ${role}`;
+
+
+            /*
+                Get authenticated session.
+            */
+
+            const session =
+                await getSession();
+
+
+            /*
+                Read local profile information.
+            */
+
+            const resumeSkills =
+                getResumeSkills();
+
+
+            const interviewProfile =
+                getStoredInterviewProfile();
+
+
+            const jobData =
+                getJobData();
+
+
+            /*
+                Build initial profile.
+            */
+
+            let profile =
+                buildUnifiedProfile(
+                    resumeSkills,
+                    interviewProfile,
+                    jobData
+                );
+
+
+            /*
+                Try dashboard API for additional
+                authenticated data.
+
+                The frontend remains functional even
+                when dashboard data is unavailable.
+            */
+
+            const dashboard =
+                await getDashboardData(
+                    session
+                );
+
+
+            /*
+                Dashboard may provide additional
+                skill/profile information.
+            */
+
+            if (
+                dashboard &&
+                Array.isArray(
+                    dashboard.skills
+                )
+            ) {
+
+                dashboard.skills.forEach(
+                    skill => {
+
+                        if (
+                            typeof skill ===
+                            "string"
+                        ) {
+
+                            const normalized =
+                                normalizeSkill(
+                                    skill
+                                );
+
+
+                            if (
+                                normalized &&
+                                !resumeSkills.some(
+                                    existing =>
+                                        skillKey(
+                                            existing
+                                        ) ===
+                                        skillKey(
+                                            normalized
+                                        )
+                                )
+                            ) {
+
+                                resumeSkills.push(
+                                    normalized
+                                );
+
+                            }
+
+                        }
+
+                    }
+                );
+
+
+                /*
+                    Rebuild after dashboard skills.
+                */
+
+                profile =
+                    buildUnifiedProfile(
+                        resumeSkills,
+                        interviewProfile,
+                        jobData
+                    );
+
+            }
+
+
+            /*
+                If the current page has no job array
+                but an existing unified result contains
+                job count, preserve that count.
+            */
+
+            const existing =
+                readLocalStorageJson(
+                    "latest_skill_gap"
+                );
+
+
+            if (
+                profile.jobsAnalyzed === 0 &&
+                existing &&
+                typeof existing.jobs_analyzed ===
+                "number"
+            ) {
+
+                profile.jobsAnalyzed =
+                    existing.jobs_analyzed;
+
+            }
+
+
+            /*
+                Render summary.
+            */
+
+            document.getElementById(
+                "profileSkillCount"
+            ).textContent =
+                profile.currentSkills.length;
+
+
+            document.getElementById(
+                "improveSkillCount"
+            ).textContent =
+                profile.missingSkills.length;
+
+
+            document.getElementById(
+                "coverageValue"
+            ).textContent =
+                `${profile.coverage}%`;
+
+
+            document.getElementById(
+                "jobsAnalyzed"
+            ).textContent =
+                profile.jobsAnalyzed;
+
+
+            /*
+                Render tags.
+            */
+
+            renderTags(
+                "currentSkills",
+                profile.currentSkills,
+                "current"
+            );
+
+
+            renderTags(
+                "missingSkills",
+                profile.missingSkills,
+                "missing"
+            );
+
+
+            /*
+                Render detailed gaps.
+            */
+
+            renderDetails(
+                profile.gaps,
+                profile.jobsAnalyzed
+            );
+
+
+            /*
+                Save unified data.
+            */
+
+            saveUnifiedData(
+                profile,
+                role
+            );
+
+
+            /*
+                Show content.
+            */
+
+            loading.style.display =
+                "none";
+
+
+            content.style.display =
+                "block";
+
+
+        } catch (error) {
+
+            console.error(
+                "Skill gap analysis error:",
+                error
+            );
+
+
+            loading.style.display =
+                "none";
+
+
+            errorBox.style.display =
+                "block";
+
+
+            errorBox.innerHTML = `
+                <strong>
+                    Could not load the skill gap analysis.
+                </strong>
+                <br><br>
+                ${escapeHtml(
+                    error.message ||
+                    "Unknown error"
+                )}
+            `;
+
+        }
+
+    }
+
+
+
+    /* =====================================================
+       LOGOUT
+    ===================================================== */
+
+    document
+        .getElementById(
+            "logoutButton"
+        )
+        .addEventListener(
+            "click",
+            async () => {
+
+                try {
+
+                    if (
+                        typeof supabaseClient !==
+                        "undefined"
+                    ) {
+
+                        await supabaseClient
+                            .auth
+                            .signOut();
+
+                    }
+
+                } catch (error) {
+
+                    console.error(
+                        "Logout error:",
+                        error
+                    );
+
+                }
+
+
+                localStorage.removeItem(
+                    "latest_skill_gap"
+                );
+
+
+                window.location.href =
+                    "login.html";
+
+            }
+        );
+
+
+
+    /* =====================================================
+       START
+    ===================================================== */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        loadSkillGap
+    );
+
+</script>
+
+</body>
 </html>

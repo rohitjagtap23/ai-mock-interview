@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Job Match Details | AI Career Interviewer
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <style>
+
+        body {
+
+            margin: 0;
+
+            font-family:
+                Arial,
+                sans-serif;
+
+            background:
+                #f5f7fb;
+
+            color:
+                #1f2937;
+
+        }
+
+
+        .page {
+
+            max-width:
+                1100px;
+
+            margin:
+                0 auto;
+
+            padding:
+                30px;
+
+        }
+
+
+        .topbar {
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            gap:
+                20px;
+
+            margin-bottom:
+                25px;
+
+        }
+
+
+        .topbar h1 {
+
+            margin:
+                0;
+
+        }
+
+
+        .back-btn {
+
+            text-decoration:
+                none;
+
+            color:
+                #2563eb;
+
+            font-weight:
+                600;
+
+        }
+
+
+        .job-card,
+        .section-card {
+
+            background:
+                white;
+
+            border-radius:
+                16px;
+
+            padding:
+                30px;
+
+            box-shadow:
+                0 5px 20px
+                rgba(0,0,0,.06);
+
+        }
+
+
+        .job-card {
+
+            margin-bottom:
+                25px;
+
+        }
+
+
+        .job-title {
+
+            font-size:
+                30px;
+
+            margin:
+                0 0 10px;
+
+        }
+
+
+        .company {
+
+            font-size:
+                18px;
+
+            color:
+                #4b5563;
+
+            margin-bottom:
+                6px;
+
+            font-weight:
+                600;
+
+        }
+
+
+        .location {
+
+            color:
+                #6b7280;
+
+        }
+
+
+        .match-section {
+
+            margin-top:
+                25px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                25px;
+
+        }
+
+
+        .match-circle {
+
+            width:
+                110px;
+
+            height:
+                110px;
+
+            border-radius:
+                50%;
+
+            background:
+                #eff6ff;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            font-size:
+                25px;
+
+            font-weight:
+                bold;
+
+            color:
+                #2563eb;
+
+            border:
+                7px solid #dbeafe;
+
+            flex-shrink:
+                0;
+
+        }
+
+
+        .match-text h3 {
+
+            margin:
+                0 0 8px;
+
+        }
+
+
+        .match-text p {
+
+            color:
+                #6b7280;
+
+            margin:
+                0;
+
+            line-height:
+                1.6;
+
+        }
+
+
+        .grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap:
+                25px;
+
+            margin-bottom:
+                25px;
+
+        }
+
+
+        .section-card h2 {
+
+            margin-top:
+                0;
+
+        }
+
+
+        .skill-list {
+
+            list-style:
+                none;
+
+            padding:
+                0;
+
+            margin:
+                0;
+
+        }
+
+
+        .skill-list li {
+
+            padding:
+                12px;
+
+            margin-bottom:
+                10px;
+
+            border-radius:
+                8px;
+
+            background:
+                #f9fafb;
+
+        }
+
+
+        .matched li {
+
+            border-left:
+                4px solid #22c55e;
+
+        }
+
+
+        .missing li {
+
+            border-left:
+                4px solid #f59e0b;
+
+        }
+
+
+        .description {
+
+            white-space:
+                pre-wrap;
+
+            line-height:
+                1.7;
+
+            color:
+                #4b5563;
+
+        }
+
+
+        .actions {
+
+            display:
+                flex;
+
+            flex-wrap:
+                wrap;
+
+            gap:
+                12px;
+
+            margin-top:
+                25px;
+
+        }
+
+
+        .btn {
+
+            border-radius:
+                8px;
+
+            padding:
+                12px 20px;
+
+            font-size:
+                15px;
+
+            font-weight:
+                600;
+
+            text-decoration:
+                none;
+
+            display:
+                inline-block;
+
+        }
+
+
+        .primary {
+
+            background:
+                #2563eb;
+
+            color:
+                white;
+
+        }
+
+
+        .secondary {
+
+            background:
+                #e5e7eb;
+
+            color:
+                #111827;
+
+        }
+
+
+        .loading {
+
+            text-align:
+                center;
+
+            color:
+                #6b7280;
+
+            padding:
+                40px;
+
+        }
+
+
+        .error {
+
+            background:
+                #fee2e2;
+
+            color:
+                #991b1b;
+
+            padding:
+                20px;
+
+            border-radius:
+                10px;
+
+        }
+
+
+        @media (
+            max-width: 750px
+        ) {
+
+            .grid {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .page {
+
+                padding:
+                    15px;
+
+            }
+
+
+            .job-title {
+
+                font-size:
+                    24px;
+
+            }
+
+
+            .topbar {
+
+                flex-direction:
+                    column;
+
+                align-items:
+                    flex-start;
+
+            }
+
+
+            .match-section {
+
+                flex-direction:
+                    column;
+
+                align-items:
+                    flex-start;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+    <!-- HEADER -->
+
+    <div class="topbar">
+
+        <h1>
+            Job Match Details
+        </h1>
+
+
+        <a
+            href="job-matching.html"
+            class="back-btn"
+        >
+            ← Back to Job Matches
+        </a>
+
+    </div>
+
+
+    <!-- LOADING -->
+
+    <div
+        id="loading"
+        class="loading"
+    >
+
+        Loading job details...
+
+    </div>
+
+
+    <!-- ERROR -->
+
+    <div
+        id="error"
+        class="error"
+        style="display:none;"
+    ></div>
+
+
+    <!-- CONTENT -->
+
+    <div
+        id="jobContent"
+        style="display:none;"
+    >
+
+
+        <!-- JOB INFORMATION -->
+
+        <div class="job-card">
+
+
+            <h2
+                id="jobTitle"
+                class="job-title"
+            ></h2>
+
+
+            <div
+                id="company"
+                class="company"
+            ></div>
+
+
+            <div
+                id="location"
+                class="location"
+            ></div>
+
+
+            <!-- MATCH -->
+
+            <div class="match-section">
+
+
+                <div
+                    id="matchPercentage"
+                    class="match-circle"
+                >
+                    0%
+                </div>
+
+
+                <div class="match-text">
+
+                    <h3>
+                        Resume Match
+                    </h3>
+
+
+                    <p
+                        id="matchExplanation"
+                    >
+                        Comparing your skills with the requirements
+                        detected in this job listing.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- BUTTONS -->
+
+            <div class="actions">
+
+
+                <a
+                    id="originalJob"
+                    class="btn primary"
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    View Original Job
+                </a>
+
+
+                <a
+                    href="job-matching.html"
+                    class="btn secondary"
+                >
+                    Back to Jobs
+                </a>
+
+
+            </div>
+
+
+        </div>
+
+
+        <!-- SKILLS -->
+
+        <div class="grid">
+
+
+            <!-- MATCHED -->
+
+            <div class="section-card">
+
+                <h2>
+                    ✓ Matching Skills
+                </h2>
+
+
+                <ul
+                    id="matchedSkills"
+                    class="skill-list matched"
+                ></ul>
+
+            </div>
+
+
+            <!-- MISSING -->
+
+            <div class="section-card">
+
+                <h2>
+                    ⚠ Skills to Improve
+                </h2>
+
+
+                <ul
+                    id="missingSkills"
+                    class="skill-list missing"
+                ></ul>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- DESCRIPTION -->
+
+        <div class="section-card">
+
+            <h2>
+                Job Description
+            </h2>
+
+
+            <div
+                id="description"
+                class="description"
+            ></div>
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+    const loading =
+        document.getElementById(
+            "loading"
+        );
+
+
+    const errorBox =
+        document.getElementById(
+            "error"
+        );
+
+
+    const jobContent =
+        document.getElementById(
+            "jobContent"
+        );
+
+
+    /*
+     * ERROR
+     */
+
+    function showError(message) {
+
+        loading.style.display =
+            "none";
+
+
+        errorBox.style.display =
+            "block";
+
+
+        errorBox.textContent =
+            message;
+
+    }
+
+
+    /*
+     * GET JOB FROM URL
+     */
+
+    function getJobData() {
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+
+        const encodedJob =
+            params.get("job");
+
+
+        if (!encodedJob) {
+
+            return null;
+
+        }
+
+
+        try {
+
+            return JSON.parse(
+                decodeURIComponent(
+                    encodedJob
+                )
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Job data parsing error:",
+                error
+            );
+
+
+            return null;
+
+        }
+
+    }
+
+
+    /*
+     * NORMALIZE SKILLS
+     */
+
+    function normalizeSkills(
+        skills
+    ) {
+
+        if (
+            !Array.isArray(skills)
+        ) {
+
+            return [];
+
+        }
+
+
+        return skills
+            .map(skill => {
+
+                if (
+                    typeof skill ===
+                    "string"
+                ) {
+
+                    return skill;
+
+                }
+
+
+                if (
+                    skill &&
+                    skill.skill
+                ) {
+
+                    return skill.skill;
+
+                }
+
+
+                if (
+                    skill &&
+                    skill.name
+                ) {
+
+                    return skill.name;
+
+                }
+
+
+                return null;
+
+            })
+            .filter(Boolean);
+
+    }
+
+
+    /*
+     * SKILL LIST
+     */
+
+    function createSkillList(
+        element,
+        skills,
+        emptyMessage
+    ) {
+
+        element.innerHTML =
+            "";
+
+
+        const normalized =
+            normalizeSkills(
+                skills
+            );
+
+
+        if (
+            normalized.length ===
+            0
+        ) {
+
+            const li =
+                document.createElement(
+                    "li"
+                );
+
+
+            li.textContent =
+                emptyMessage;
+
+
+            element.appendChild(
+                li
+            );
+
+
+            return;
+
+        }
+
+
+        normalized.forEach(
+            skill => {
+
+                const li =
+                    document.createElement(
+                        "li"
+                    );
+
+
+                li.textContent =
+                    skill;
+
+
+                element.appendChild(
+                    li
+                );
+
+            }
+        );
+
+    }
+
+
+    /*
+     * RENDER JOB
+     */
+
+    function renderJob(job) {
+
+
+        loading.style.display =
+            "none";
+
+
+        jobContent.style.display =
+            "block";
+
+
+        /*
+         * TITLE
+         */
+
+        document.getElementById(
+            "jobTitle"
+        ).textContent =
+
+            job.title ||
+            job.job_title ||
+            job.position ||
+            "Job Position";
+
+
+        /*
+         * COMPANY
+         */
+
+        document.getElementById(
+            "company"
+        ).textContent =
+
+            job.company_name ||
+            job.company ||
+            job.employer_name ||
+            "Company not specified";
+
+
+        /*
+         * LOCATION
+         */
+
+        document.getElementById(
+            "location"
+        ).textContent =
+
+            job.location ||
+            job.job_location ||
+            "Location not specified";
+
+
+        /*
+         * SCORE
+         */
+
+        const score =
+            Number(
+
+                job.match_score ??
+                job.match_percentage ??
+                job.matchPercent ??
+                job.score ??
+                job.match ??
+                0
+
+            );
+
+
+        const safeScore =
+
+            Number.isFinite(score)
+
+                ? Math.round(
+                    score * 10
+                ) / 10
+
+                : 0;
+
+
+        document.getElementById(
+            "matchPercentage"
+        ).textContent =
+
+            `${safeScore}%`;
+
+
+        /*
+         * EXPLANATION
+         */
+
+        document.getElementById(
+            "matchExplanation"
+        ).textContent =
+
+            `Your resume currently matches approximately ${safeScore}% of the skills detected for this job.`;
+
+
+        /*
+         * MATCHING SKILLS
+         */
+
+        createSkillList(
+
+            document.getElementById(
+                "matchedSkills"
+            ),
+
+            job.matched_skills ||
+            job.matchedSkills ||
+            job.matching_skills ||
+            [],
+
+            "No matching skills detected."
+
+        );
+
+
+        /*
+         * MISSING SKILLS
+         */
+
+        createSkillList(
+
+            document.getElementById(
+                "missingSkills"
+            ),
+
+            job.missing_skills ||
+            job.missingSkills ||
+            job.skills_to_improve ||
+            [],
+
+            "No additional skill gaps detected."
+
+        );
+
+
+        /*
+         * DESCRIPTION
+         */
+
+        document.getElementById(
+            "description"
+        ).textContent =
+
+            job.description ||
+            job.job_description ||
+            "No job description was provided by the job listing.";
+
+
+        /*
+         * ORIGINAL JOB
+         */
+
+        const originalJob =
+
+            job.job_url ||
+            job.link ||
+            job.url ||
+            job.apply_link ||
+            job.apply_url ||
+            "";
+
+
+        const originalJobButton =
+            document.getElementById(
+                "originalJob"
+            );
+
+
+        if (originalJob) {
+
+            originalJobButton.href =
+                originalJob;
+
+
+            originalJobButton.style.display =
+                "inline-block";
+
+        } else {
+
+            originalJobButton.style.display =
+                "none";
+
+        }
+
+    }
+
+
+    /*
+     * START
+     */
+
+    const job =
+        getJobData();
+
+
+    if (!job) {
+
+        showError(
+            "Job information was not found. Please return to Job Matching and select a job again."
+        );
+
+    } else {
+
+        renderJob(
+            job
+        );
+
+    }
+
+</script>
+
+
+</body>
+
+</html>

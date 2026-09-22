@@ -1,74 +1,1924 @@
 <!DOCTYPE html>
 <html lang="en">
- <head>
-  <title>
-   Learning Roadmap | AI Career Interviewer
-  </title>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <link href="style.css" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-  </script>
-  <script src="auth.js">
-  </script>
-  <script defer="" src="page.js">
-  </script>
- </head>
- <body data-page="roadmap">
-  <aside class="sidebar">
-   <div class="sidebar-title">
-    AI Career
-    <br/>
-    Interviewer
-   </div>
-   <nav class="sidebar-nav">
-    <a data-page="index.html" href="index.html">
-     AI Interview
-    </a>
-    <a data-page="dashboard.html" href="dashboard.html">
-     Dashboard
-    </a>
-    <a data-page="career-intelligence.html" href="career-intelligence.html">
-     Market Intelligence
-    </a>
-    <a data-page="resume.html" href="resume.html">
-     Resume Analyzer
-    </a>
-    <a data-page="job-matching.html" href="job-matching.html">
-     Job Matching
-    </a>
-    <a data-page="skill-gap.html" href="skill-gap.html">
-     Skill Gap
-    </a>
-    <a data-page="roadmap.html" href="roadmap.html">
-     Learning Roadmap
-    </a>
-    <a data-page="progress.html" href="progress.html">
-     My Progress
-    </a>
-    <a data-page="interview-history.html" href="interview-history.html">
-     Interview History
-    </a>
-    <a data-page="profile.html" href="profile.html">
-     My Profile
-    </a>
-    <button class="logout-button" id="logoutButton" type="button">
-     Logout
-    </button>
-   </nav>
-  </aside>
-  <main class="main">
-   <h1>
-    Personalized Learning Roadmap
-   </h1>
-   <p class="muted">
-    A focused plan based on your latest skill gaps.
-   </p>
-   <button id="roadmapButton" type="button">
-    Generate My Roadmap
-   </button>
-   <section id="roadmapOut" style="margin-top:20px">
-   </section>
-  </main>
- </body>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Learning Roadmap | AI Career Interviewer</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Your Supabase configuration -->
+    <script src="auth.js"></script>
+
+
+    <style>
+
+        /* =========================================================
+           ROADMAP PAGE
+        ========================================================= */
+
+        .roadmap-header {
+            margin-bottom: 28px;
+        }
+
+        .roadmap-header h1 {
+            margin-bottom: 8px;
+        }
+
+        .roadmap-subtitle {
+            color: #94a3b8;
+            font-size: 16px;
+        }
+
+        .role-badge {
+            display: inline-block;
+            margin-top: 14px;
+            padding: 8px 14px;
+            border-radius: 20px;
+            background: #1e3a8a;
+            color: #dbeafe;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+
+        /* =========================================================
+           ACTIONS
+        ========================================================= */
+
+        .roadmap-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .roadmap-actions button,
+        .roadmap-actions a {
+            border: none;
+            border-radius: 10px;
+            padding: 12px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .primary-action {
+            background: #2563eb;
+            color: white;
+        }
+
+        .primary-action:hover {
+            background: #1d4ed8;
+        }
+
+        .secondary-action {
+            background: #334155;
+            color: #e2e8f0;
+        }
+
+        .secondary-action:hover {
+            background: #475569;
+        }
+
+
+        /* =========================================================
+           SUMMARY
+        ========================================================= */
+
+        .roadmap-summary {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .roadmap-summary h2 {
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+
+        .roadmap-summary p {
+            color: #cbd5e1;
+            line-height: 1.7;
+        }
+
+
+        /* =========================================================
+           PROGRESS
+        ========================================================= */
+
+        .overall-progress {
+            margin-top: 20px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 10px;
+            background: #334155;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #2563eb;
+            border-radius: 20px;
+            transition: width 0.3s ease;
+        }
+
+
+        /* =========================================================
+           WEEK CARDS
+        ========================================================= */
+
+        .week-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .week-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .week-number {
+            color: #60a5fa;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .week-title {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .week-goal {
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        .why-box {
+            background: #172033;
+            border-left: 4px solid #2563eb;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 22px;
+        }
+
+        .why-box strong {
+            color: #93c5fd;
+        }
+
+        .why-box p {
+            color: #cbd5e1;
+            margin: 7px 0 0;
+            line-height: 1.6;
+        }
+
+
+        /* =========================================================
+           TOPICS
+        ========================================================= */
+
+        .section-title {
+            margin-top: 22px;
+            margin-bottom: 12px;
+            font-size: 17px;
+        }
+
+        .topic-card {
+            background: #111827;
+            border: 1px solid #374151;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 12px;
+        }
+
+        .topic-card h4 {
+            margin: 0 0 10px;
+            color: #f8fafc;
+            font-size: 16px;
+        }
+
+        .concept-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .concept {
+            background: #1e3a8a;
+            color: #dbeafe;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+
+        /* =========================================================
+           RESOURCES
+        ========================================================= */
+
+        .resource-query {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-top: 10px;
+            line-height: 1.7;
+        }
+
+        .resource-link {
+            display: inline-block;
+            margin: 6px 6px 0 0;
+            padding: 7px 10px;
+            background: #334155;
+            color: #dbeafe;
+            border-radius: 7px;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .resource-link:hover {
+            background: #475569;
+        }
+
+
+        /* =========================================================
+           PRACTICE
+        ========================================================= */
+
+        .practice-box,
+        .completion-box {
+            background: #111827;
+            border-radius: 12px;
+            padding: 18px;
+            margin-top: 14px;
+        }
+
+        .practice-box strong,
+        .completion-box strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #93c5fd;
+        }
+
+        .practice-box p,
+        .completion-box p {
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .week-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid #334155;
+            color: #cbd5e1;
+        }
+
+        .week-check input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+
+        /* =========================================================
+           STATES
+        ========================================================= */
+
+        .loading-box {
+            text-align: center;
+            padding: 60px 20px;
+            background: #1e293b;
+            border-radius: 16px;
+            color: #94a3b8;
+        }
+
+        .loading-box h2 {
+            color: #e2e8f0;
+        }
+
+        .error-box {
+            background: #451a1a;
+            border: 1px solid #7f1d1d;
+            color: #fecaca;
+            padding: 20px;
+            border-radius: 12px;
+            line-height: 1.6;
+        }
+
+        .success-box {
+            background: #052e16;
+            border: 1px solid #166534;
+            color: #bbf7d0;
+            padding: 14px 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+
+        /* =========================================================
+           MOBILE
+        ========================================================= */
+
+        @media (max-width: 700px) {
+
+            .week-top {
+                flex-direction: column;
+            }
+
+            .week-title {
+                font-size: 20px;
+            }
+
+            .roadmap-actions {
+                flex-direction: column;
+            }
+
+            .roadmap-actions button,
+            .roadmap-actions a {
+                width: 100%;
+                text-align: center;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body data-page="roadmap">
+
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<aside class="sidebar">
+
+    <div class="sidebar-title">
+
+        AI Career
+        <br>
+        Interviewer
+
+    </div>
+
+
+    <nav class="sidebar-nav">
+
+        <a href="index.html">
+            AI Interview
+        </a>
+
+        <a href="dashboard.html">
+            Dashboard
+        </a>
+
+        <a href="career-intelligence.html">
+            Market Intelligence
+        </a>
+
+        <a href="resume.html">
+            Resume Analyzer
+        </a>
+
+        <a href="job-matching.html">
+            Job Matching
+        </a>
+
+        <a href="skill-gap.html">
+            Skill Gap
+        </a>
+
+        <a href="roadmap.html">
+            Learning Roadmap
+        </a>
+
+        <a href="progress.html">
+            My Progress
+        </a>
+
+        <a href="interview-history.html">
+            Interview History
+        </a>
+
+        <a href="profile.html">
+            My Profile
+        </a>
+
+        <button
+            class="logout-button"
+            id="logoutButton"
+            type="button">
+
+            Logout
+
+        </button>
+
+    </nav>
+
+</aside>
+
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="main">
+
+
+    <div class="roadmap-header">
+
+        <h1>
+            Personalized Learning Roadmap
+        </h1>
+
+        <p class="roadmap-subtitle">
+
+            A focused learning plan generated from your latest
+            interview skill gaps and target role.
+
+        </p>
+
+
+        <div
+            class="role-badge"
+            id="roleBadge">
+
+            Target Role: Loading...
+
+        </div>
+
+    </div>
+
+
+
+    <div class="roadmap-actions">
+
+        <button
+            id="roadmapButton"
+            class="primary-action"
+            type="button">
+
+            Generate My Roadmap
+
+        </button>
+
+
+        <a
+            href="skill-gap.html"
+            class="secondary-action">
+
+            View Skill Gap
+
+        </a>
+
+
+        <a
+            href="dashboard.html"
+            class="secondary-action">
+
+            Dashboard
+
+        </a>
+
+    </div>
+
+
+
+    <div id="roadmapOut">
+
+        <div class="loading-box">
+
+            <h2>
+                Ready to build your roadmap
+            </h2>
+
+            <p>
+
+                Click "Generate My Roadmap" to create a
+                personalized learning plan.
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+</main>
+
+
+
+<script>
+
+const API_URL =
+    "http://127.0.0.1:5000";
+
+
+const roadmapButton =
+    document.getElementById("roadmapButton");
+
+
+const roadmapOut =
+    document.getElementById("roadmapOut");
+
+
+const roleBadge =
+    document.getElementById("roleBadge");
+
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        value ?? "";
+
+    return div.innerHTML;
+
+}
+
+
+
+/* =========================================================
+   ROLE
+========================================================= */
+
+function getRole() {
+
+    return (
+        localStorage.getItem(
+            "career_target_role"
+        ) ||
+
+        localStorage.getItem(
+            "latest_skill_gap_role"
+        ) ||
+
+        localStorage.getItem(
+            "latest_job_match_role"
+        ) ||
+
+        localStorage.getItem(
+            "target_role"
+        ) ||
+
+        "Java Developer"
+    );
+
+}
+
+
+
+/* =========================================================
+   SKILL GAPS
+========================================================= */
+
+function getSkillGaps() {
+
+    try {
+
+        const stored =
+            localStorage.getItem(
+                "latest_skill_gap"
+            );
+
+
+        if (!stored) {
+            return [];
+        }
+
+
+        const parsed =
+            JSON.parse(stored);
+
+
+        /*
+            Current Skill Gap format:
+
+            {
+                role: "Java Developer",
+                current_skills: [...],
+                missing_skills: [...],
+                matched_skills: [...],
+                jobs_analyzed: 10,
+                coverage: 33
+            }
+        */
+
+
+        if (Array.isArray(parsed)) {
+
+            return parsed;
+
+        }
+
+
+        if (
+            parsed &&
+            Array.isArray(
+                parsed.missing_skills
+            )
+        ) {
+
+            return parsed.missing_skills;
+
+        }
+
+
+        /*
+            Support older format.
+        */
+
+        if (
+            parsed &&
+            Array.isArray(
+                parsed.skill_gaps
+            )
+        ) {
+
+            return parsed.skill_gaps;
+
+        }
+
+
+        return [];
+
+    } catch (error) {
+
+        console.error(
+            "Skill gap parsing error:",
+            error
+        );
+
+        return [];
+
+    }
+
+}
+
+
+
+/* =========================================================
+   SAVE ROADMAP
+========================================================= */
+
+function saveRoadmap(roadmap) {
+
+    try {
+
+        localStorage.setItem(
+            "latest_roadmap",
+            JSON.stringify(roadmap)
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Could not save roadmap:",
+            error
+        );
+
+    }
+
+}
+
+
+
+/* =========================================================
+   SAVED ROADMAP
+========================================================= */
+
+function getSavedRoadmap() {
+
+    try {
+
+        const stored =
+            localStorage.getItem(
+                "latest_roadmap"
+            );
+
+
+        if (!stored) {
+            return null;
+        }
+
+
+        return JSON.parse(stored);
+
+    } catch (error) {
+
+        console.error(
+            "Saved roadmap parsing error:",
+            error
+        );
+
+        return null;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   NORMALIZE RESPONSE
+========================================================= */
+
+function normalizeRoadmapResponse(data) {
+
+    if (
+        data &&
+        data.roadmap &&
+        typeof data.roadmap === "object"
+    ) {
+
+        return data.roadmap;
+
+    }
+
+
+    if (
+        data &&
+        typeof data === "object" &&
+        Array.isArray(data.weeks)
+    ) {
+
+        return data;
+
+    }
+
+
+    return null;
+
+}
+
+
+
+/* =========================================================
+   GET SUPABASE SESSION
+========================================================= */
+
+async function getActiveSession() {
+
+    if (
+        typeof supabaseClient ===
+        "undefined"
+    ) {
+
+        throw new Error(
+            "Supabase client is not available."
+        );
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth.getSession();
+
+
+    if (error) {
+        throw error;
+    }
+
+
+    if (!data || !data.session) {
+
+        window.location.href =
+            "login.html";
+
+        return null;
+
+    }
+
+
+    return data.session;
+
+}
+
+
+
+/* =========================================================
+   RESOURCE SEARCH
+========================================================= */
+
+async function getResources(skill) {
+
+    try {
+
+        const {
+            data: sessionData,
+            error: sessionError
+        } = await supabaseClient.auth.getSession();
+
+        if (sessionError) {
+            console.error("Session error:", sessionError);
+            return [];
+        }
+
+        const session = sessionData?.session;
+
+        if (!session) {
+            console.warn("No active login session.");
+            return [];
+        }
+
+        const response = await fetch(
+            `${API_URL}/api/resources?skill=${encodeURIComponent(skill)}`,
+            {
+                method: "GET",
+
+                headers: {
+                    "Authorization":
+                        `Bearer ${session.access_token}`,
+
+                    "Content-Type":
+                        "application/json"
+                }
+            }
+        );
+
+        if (!response.ok) {
+
+            console.warn(
+                "Resource API returned:",
+                response.status
+            );
+
+            return [];
+        }
+
+        const data =
+            await response.json();
+
+        if (
+            data &&
+            Array.isArray(data.resources)
+        ) {
+            return data.resources;
+        }
+
+        return [];
+
+    } catch (error) {
+
+        console.error(
+            "Learning resource error:",
+            error
+        );
+
+        return [];
+    }
+}
+
+
+/* =========================================================
+   RESOURCE HTML
+========================================================= */
+
+function renderResources(resources) {
+
+    if (
+        !Array.isArray(resources) ||
+        resources.length === 0
+    ) {
+
+        return `
+
+            <div class="resource-query">
+
+                No resources returned.
+                Search for learning resources for this skill.
+
+            </div>
+
+        `;
+
+    }
+
+
+    return resources
+        .map(resource => {
+
+            const url =
+                resource.url ||
+                resource.link ||
+                "#";
+
+
+            const title =
+                resource.title ||
+                resource.name ||
+                "Learning Resource";
+
+
+            return `
+
+                <a
+                    class="resource-link"
+                    href="${escapeHtml(url)}"
+                    target="_blank"
+                    rel="noopener noreferrer">
+
+                    ${escapeHtml(title)}
+
+                </a>
+
+            `;
+
+        })
+        .join("");
+
+}
+
+
+
+/* =========================================================
+   RENDER ROADMAP
+========================================================= */
+
+async function renderRoadmap(roadmap) {
+
+    if (
+        !roadmap ||
+        !Array.isArray(roadmap.weeks)
+    ) {
+
+        roadmapOut.innerHTML = `
+
+            <div class="error-box">
+
+                <strong>
+                    Roadmap format error
+                </strong>
+
+                <br><br>
+
+                The AI roadmap was generated,
+                but the returned weeks data
+                was not in the expected format.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    const weeks =
+        roadmap.weeks;
+
+
+    if (weeks.length === 0) {
+
+        roadmapOut.innerHTML = `
+
+            <div class="error-box">
+
+                No learning weeks were generated.
+
+                <br><br>
+
+                Please generate the roadmap again.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    const role =
+        roadmap.role ||
+        getRole();
+
+
+    roleBadge.textContent =
+        `Target Role: ${role}`;
+
+
+    let html = `
+
+        <div class="roadmap-summary">
+
+            <h2>
+                Your AI Career Plan
+            </h2>
+
+            <p>
+
+                ${escapeHtml(
+                    roadmap.summary ||
+                    "A personalized learning plan based on your latest skill gaps."
+                )}
+
+            </p>
+
+
+            <div class="overall-progress">
+
+                <div class="progress-label">
+
+                    <span>
+                        Overall Progress
+                    </span>
+
+                    <span id="progressText">
+                        0%
+                    </span>
+
+                </div>
+
+
+                <div class="progress-track">
+
+                    <div
+                        id="progressFill"
+                        class="progress-fill">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+
+    /* =====================================================
+       WEEKS
+    ===================================================== */
+
+    weeks.forEach(
+        (week, index) => {
+
+            const weekNumber =
+                week.week ||
+                index + 1;
+
+
+            const topics =
+                Array.isArray(
+                    week.topics
+                )
+                    ? week.topics
+                    : [];
+
+
+            html += `
+
+                <section
+                    class="week-card"
+                    data-week="${index}">
+
+                    <div class="week-top">
+
+                        <div>
+
+                            <div class="week-number">
+
+                                WEEK
+                                ${escapeHtml(
+                                    weekNumber
+                                )}
+
+                            </div>
+
+
+                            <h2 class="week-title">
+
+                                ${escapeHtml(
+                                    week.title ||
+                                    "Learning Week"
+                                )}
+
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <p class="week-goal">
+
+                        <strong>
+                            Goal:
+                        </strong>
+
+                        ${escapeHtml(
+                            week.goal ||
+                            "Build practical knowledge for your target role."
+                        )}
+
+                    </p>
+
+
+                    <div class="why-box">
+
+                        <strong>
+                            Why it matters
+                        </strong>
+
+                        <p>
+
+                            ${escapeHtml(
+                                week.why_it_matters ||
+                                "This topic supports your target role."
+                            )}
+
+                        </p>
+
+                    </div>
+
+
+                    <h3 class="section-title">
+                        Topics
+                    </h3>
+
+            `;
+
+
+            /* =================================================
+               TOPICS
+            ================================================= */
+
+            topics.forEach(
+                topic => {
+
+                    const concepts =
+                        Array.isArray(
+                            topic.concepts
+                        )
+                            ? topic.concepts
+                            : [];
+
+
+                    html += `
+
+                        <div class="topic-card">
+
+                            <h4>
+
+                                ${escapeHtml(
+                                    topic.skill ||
+                                    "Skill"
+                                )}
+
+                            </h4>
+
+
+                            <div class="concept-list">
+
+                    `;
+
+
+                    if (concepts.length) {
+
+                        concepts.forEach(
+                            concept => {
+
+                                html += `
+
+                                    <span class="concept">
+
+                                        ${escapeHtml(
+                                            concept
+                                        )}
+
+                                    </span>
+
+                                `;
+
+                            }
+                        );
+
+                    } else {
+
+                        html += `
+
+                            <span class="concept">
+                                Core Concepts
+                            </span>
+
+                        `;
+
+                    }
+
+
+                    html += `
+
+                            </div>
+
+
+                            <div
+                                class="resource-query"
+                                data-resource-skill="${escapeHtml(
+                                    topic.skill || ""
+                                )}">
+
+                                Loading learning resources...
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }
+            );
+
+
+            /* =================================================
+               PRACTICE
+            ================================================= */
+
+            html += `
+
+                    <div class="practice-box">
+
+                        <strong>
+                            Practical Task
+                        </strong>
+
+                        <p>
+
+                            ${escapeHtml(
+                                week.practice_task ||
+                                "Practice the concepts covered this week."
+                            )}
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="completion-box">
+
+                        <strong>
+                            Completion Target
+                        </strong>
+
+                        <p>
+
+                            ${escapeHtml(
+                                week.completion_target ||
+                                "Complete the week's learning and practice task."
+                            )}
+
+                        </p>
+
+                    </div>
+
+
+                    <label class="week-check">
+
+                        <input
+                            type="checkbox"
+                            class="week-checkbox"
+                            data-week="${index}">
+
+                        <span>
+                            Mark this week complete
+                        </span>
+
+                    </label>
+
+
+                </section>
+
+            `;
+
+        }
+    );
+
+
+    roadmapOut.innerHTML =
+        html;
+
+
+
+    /* =========================================================
+       RESTORE PROGRESS
+    ========================================================= */
+
+    let savedProgress = {};
+
+
+    try {
+
+        savedProgress =
+            JSON.parse(
+                localStorage.getItem(
+                    "roadmap_progress"
+                ) || "{}"
+            );
+
+    } catch {
+
+        savedProgress = {};
+
+    }
+
+
+    document
+        .querySelectorAll(
+            ".week-checkbox"
+        )
+        .forEach(
+            checkbox => {
+
+                const index =
+                    checkbox.dataset.week;
+
+
+                checkbox.checked =
+                    savedProgress[index] === true;
+
+
+                checkbox.addEventListener(
+                    "change",
+                    () => {
+
+                        savedProgress[index] =
+                            checkbox.checked;
+
+
+                        localStorage.setItem(
+                            "roadmap_progress",
+                            JSON.stringify(
+                                savedProgress
+                            )
+                        );
+
+
+                        updateProgress();
+
+                    }
+                );
+
+            }
+        );
+
+
+    updateProgress();
+
+
+
+    /* =========================================================
+       LOAD RESOURCES
+    ========================================================= */
+
+    const resourceElements =
+        document.querySelectorAll(
+            "[data-resource-skill]"
+        );
+
+
+    for (
+        const element
+        of resourceElements
+    ) {
+
+        const skill =
+            element.dataset.resourceSkill;
+
+
+        if (!skill) {
+            continue;
+        }
+
+
+        const resources =
+            await getResources(
+                skill
+            );
+
+
+        element.innerHTML =
+            renderResources(
+                resources
+            );
+
+    }
+
+}
+
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+function updateProgress() {
+
+    const checkboxes =
+        Array.from(
+            document.querySelectorAll(
+                ".week-checkbox"
+            )
+        );
+
+
+    const completed =
+        checkboxes.filter(
+            checkbox =>
+                checkbox.checked
+        ).length;
+
+
+    const total =
+        checkboxes.length;
+
+
+    const percentage =
+        total > 0
+            ? Math.round(
+                (
+                    completed /
+                    total
+                ) * 100
+            )
+            : 0;
+
+
+    const progressFill =
+        document.getElementById(
+            "progressFill"
+        );
+
+
+    const progressText =
+        document.getElementById(
+            "progressText"
+        );
+
+
+    if (progressFill) {
+
+        progressFill.style.width =
+            `${percentage}%`;
+
+    }
+
+
+    if (progressText) {
+
+        progressText.textContent =
+            `${percentage}%`;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   GENERATE ROADMAP
+========================================================= */
+
+async function generateRoadmap() {
+
+    const role =
+        getRole();
+
+
+    const skillGaps =
+        getSkillGaps();
+
+
+    roleBadge.textContent =
+        `Target Role: ${role}`;
+
+
+    if (!skillGaps.length) {
+
+        const saved =
+            getSavedRoadmap();
+
+
+        if (saved) {
+
+            const normalized =
+                normalizeRoadmapResponse(
+                    saved
+                );
+
+
+            if (normalized) {
+
+                await renderRoadmap(
+                    normalized
+                );
+
+                return;
+
+            }
+
+        }
+
+
+        roadmapOut.innerHTML = `
+
+            <div class="error-box">
+
+                <strong>
+                    No skill-gap data found.
+                </strong>
+
+                <br><br>
+
+                Complete an AI interview and
+                Skill Gap Analysis first.
+
+                <br><br>
+
+                <a
+                    href="skill-gap.html"
+                    class="secondary-action"
+                    style="
+                        display:inline-block;
+                        margin-top:8px;
+                    ">
+
+                    Go to Skill Gap
+
+                </a>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    roadmapButton.disabled =
+        true;
+
+
+    roadmapButton.textContent =
+        "Generating Roadmap...";
+
+
+    roadmapOut.innerHTML = `
+
+        <div class="loading-box">
+
+            <h2>
+                AI is building your roadmap...
+            </h2>
+
+            <p>
+
+                Analyzing your skill gaps and
+                creating a personalized learning plan.
+
+            </p>
+
+        </div>
+
+    `;
+
+
+    try {
+
+
+        /* =====================================================
+           GET SUPABASE SESSION
+        ===================================================== */
+
+        const session =
+            await getActiveSession();
+
+
+        if (!session) {
+            return;
+        }
+
+
+        /* =====================================================
+           ROADMAP API
+        ===================================================== */
+
+        const response =
+            await fetch(
+
+                `${API_URL}/api/roadmap`,
+
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Authorization":
+                            `Bearer ${session.access_token}`,
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            role:
+                                role,
+
+                            skill_gaps:
+                                skillGaps
+
+                        })
+
+                }
+
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `Roadmap API returned ${response.status}`
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            data.status &&
+            data.status !== "success"
+        ) {
+
+            throw new Error(
+                data.message ||
+                "Roadmap generation failed."
+            );
+
+        }
+
+
+        const roadmap =
+            normalizeRoadmapResponse(
+                data
+            );
+
+
+        if (!roadmap) {
+
+            throw new Error(
+                "The server returned an invalid roadmap format."
+            );
+
+        }
+
+
+        if (
+            !Array.isArray(
+                roadmap.weeks
+            )
+        ) {
+
+            throw new Error(
+                "Roadmap weeks are not in array format."
+            );
+
+        }
+
+
+        saveRoadmap(
+            roadmap
+        );
+
+
+        await renderRoadmap(
+            roadmap
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Roadmap generation error:",
+            error
+        );
+
+
+        roadmapOut.innerHTML = `
+
+            <div class="error-box">
+
+                <strong>
+                    Roadmap generation failed.
+                </strong>
+
+                <br><br>
+
+                ${escapeHtml(
+                    error.message
+                )}
+
+                <br><br>
+
+                Please click
+                <strong>
+                    Generate My Roadmap
+                </strong>
+                again.
+
+            </div>
+
+        `;
+
+    } finally {
+
+        roadmapButton.disabled =
+            false;
+
+        roadmapButton.textContent =
+            "Generate My Roadmap";
+
+    }
+
+}
+
+
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+roadmapButton.addEventListener(
+    "click",
+    generateRoadmap
+);
+
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+const logoutButton =
+    document.getElementById(
+        "logoutButton"
+    );
+
+
+if (logoutButton) {
+
+    logoutButton.addEventListener(
+        "click",
+        async () => {
+
+            try {
+
+                if (
+                    typeof logoutUser ===
+                    "function"
+                ) {
+
+                    await logoutUser();
+
+                } else if (
+                    typeof logout ===
+                    "function"
+                ) {
+
+                    await logout();
+
+                } else if (
+                    typeof supabaseClient !==
+                    "undefined"
+                ) {
+
+                    await supabaseClient
+                        .auth
+                        .signOut();
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Logout error:",
+                    error
+                );
+
+            }
+
+
+            window.location.href =
+                "login.html";
+
+        }
+    );
+
+}
+
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+roleBadge.textContent =
+    `Target Role: ${getRole()}`;
+
+
+if (
+    getSkillGaps().length > 0
+) {
+
+    generateRoadmap();
+
+} else {
+
+    const saved =
+        getSavedRoadmap();
+
+
+    if (saved) {
+
+        const normalized =
+            normalizeRoadmapResponse(
+                saved
+            );
+
+
+        if (normalized) {
+
+            renderRoadmap(
+                normalized
+            );
+
+        }
+
+    }
+
+}
+
+</script>
+
+
+</body>
+
 </html>
